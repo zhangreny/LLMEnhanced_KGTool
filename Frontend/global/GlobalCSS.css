@@ -1,0 +1,117 @@
+body {
+    font-family: Inter;
+    padding: 0px;
+    margin: 0px;
+}
+
+/* ============= 顶部和侧边的背景颜色 ============= */
+.bg-gradient-top {
+    background: linear-gradient(to top, rgb(32, 81, 58), rgb(118, 78, 33) 80%, rgb(100, 77, 37));
+}
+.bg-gradient-top-light {
+    background: linear-gradient(to top, rgb(179, 194, 189), rgb(209, 202, 190) 80%, rgb(211, 202, 189));
+}
+.bg-gradient-left {
+    background: linear-gradient(to left, rgb(32, 81, 58), rgb(118, 78, 33) 60%, rgb(100, 77, 37));
+}
+
+
+/* ============= 宽高百分比 ============= */
+.width-10per {
+    width: 10%;
+}
+.width-20per {
+    width: 20%;
+}
+.width-30per {
+    width: 30%;
+}
+.width-40per {
+    width: 40%;
+}
+.width-50per {
+    width: 50%;
+}
+.width-60per {
+    width: 60%;
+}
+.width-70per {
+    width: 70%;
+}
+.width-80per {
+    width: 80%;
+}
+.width-90per {
+    width: 90%;
+}
+.width-100per {
+    width: 100%;
+}
+.height-10per {
+    height: 10%;
+}
+.height-20per {
+    height: 20%;
+}
+.height-30per {
+    height: 30%;
+}
+.height-40per {
+    height: 40%;
+}
+.height-50per {
+    height: 50%;
+}
+.height-60per {
+    height: 60%;
+}
+.height-70per {
+    height: 70%;
+}
+.height-80per {
+    height: 80%;
+}
+.height-90per {
+    height: 90%;
+}
+.height-100per {
+    height: 100%;
+}
+
+
+/* ============= 宽高百分比 ============= */
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+.align-center {
+    align-items: center;
+}
+.justify-center {
+    justify-content: center;
+}
+.justify-between {
+    justify-content: space-between;
+}
+
+
+/* ============= 边缘半径 ============= */
+.borderradius-6 {
+    border-radius: 6px;
+}
+.borderradius-6-right {
+    border-radius: 0px 6px 6px 0px;
+}
+.borderradius-6-left {
+    border-radius: 6px 0px 0px 6px;
+}
+
+
+/* ============= 背景颜色 ============= */
+.bg-white {
+    background-color: #fff;
+}
