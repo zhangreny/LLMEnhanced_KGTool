@@ -3,16 +3,32 @@ body {
     padding: 0px;
     margin: 0px;
 }
+span {
+	word-break: break-all;
+}
+
 
 /* ============= 顶部和侧边的背景颜色 ============= */
 .bg-gradient-top {
     background: linear-gradient(to top, rgb(32, 81, 58), rgb(118, 78, 33) 80%, rgb(100, 77, 37));
 }
 .bg-gradient-top-light {
-    background: linear-gradient(to top, rgb(179, 194, 189), rgb(209, 202, 190) 80%, rgb(211, 202, 189));
+    background: linear-gradient(to top, rgb(209, 224, 219), rgb(239, 232, 220) 80%, rgb(241, 232, 219));
 }
 .bg-gradient-left {
     background: linear-gradient(to left, rgb(32, 81, 58), rgb(118, 78, 33) 60%, rgb(100, 77, 37));
+}
+.navi-chosen {
+    background-color: white;    
+}
+
+
+/* ============= 中间的宽度拖动条 ============= */
+.width-changer {
+    cursor: ew-resize;
+}
+.cursor-pointer {
+    cursor: pointer;
 }
 
 
@@ -22,6 +38,9 @@ body {
 }
 .width-20per {
     width: 20%;
+}
+.width-25per {
+    width: 25%;
 }
 .width-30per {
     width: 30%;
@@ -37,6 +56,9 @@ body {
 }
 .width-70per {
     width: 70%;
+}
+.width-75per {
+    width: 75%;
 }
 .width-80per {
     width: 80%;
@@ -79,7 +101,7 @@ body {
 }
 
 
-/* ============= 宽高百分比 ============= */
+/* ============= Flex常用布局 ============= */
 .flex-row {
     display: flex;
     flex-direction: row;
@@ -99,7 +121,7 @@ body {
 }
 
 
-/* ============= 边缘半径 ============= */
+/* ============= 边框半径 ============= */
 .borderradius-6 {
     border-radius: 6px;
 }
@@ -111,7 +133,224 @@ body {
 }
 
 
+/* ============= 边框样式 ============= */
+.border-black {
+    border: 1px solid #000;
+}
+
+
 /* ============= 背景颜色 ============= */
 .bg-white {
     background-color: #fff;
 }
+.bg-black {
+    background-color: #000;
+}
+
+
+/* ============= padding & margin ============= */
+.padding-5 {
+    padding: 5px;
+}
+.paddingleft-5 {
+    padding-left: 5px;
+}
+.paddingright-5 {
+    padding-right: 5px;
+}
+.paddingtop-5 {
+    padding-top: 5px;
+}
+.paddingbottom-5 {
+    padding-bottom: 5px;
+}
+.padding-10 {
+    padding: 10px;
+}
+.paddingleft-10 {
+    padding-left: 10px;
+}
+.paddingright-10 {
+    padding-right: 10px;
+}
+.paddingtop-10 {
+    padding-top: 10px;
+}
+.paddingbottom-10 {
+    padding-bottom: 10px;
+}
+.padding-15 {
+    padding: 15px;
+}
+.paddingleft-15 {
+    padding-left: 15px;
+}
+.paddingright-15 {
+    padding-right: 15px;
+}
+.paddingtop-15 {
+    padding-top: 15px;
+}
+.paddingbottom-15 {
+    padding-bottom: 15px;
+}
+.padding-20 {
+    padding: 20px;
+}
+.paddingleft-20 {
+    padding-left: 20px;
+}
+.paddingright-20 {
+    padding-right: 20px;
+}
+.paddingtop-20 {
+    padding-top: 20px;
+}
+.paddingbottom-20 {
+    padding-bottom: 20px;
+}
+.margin-5 {
+    margin: 5px;
+}
+.marginleft-5 {
+    margin-left: 5px;
+}
+.marginright-5 {
+    margin-right: 5px;
+}
+.margintop-5 {
+    margin-top: 5px;
+}
+.marginbottom-5 {
+    margin-bottom: 5px;
+}
+.margin-10 {
+    margin: 10px;
+}
+.marginleft-10 {
+    margin-left: 10px;
+}
+.marginright-10 {
+    margin-right: 10px;
+}
+.margintop-10 {
+    margin-top: 10px;
+}
+.marginbottom-10 {
+    margin-bottom: 10px;
+}
+.margin-15 {
+    margin: 15px;
+}
+.marginleft-15 {
+    margin-left: 15px;
+}
+.marginright-15 {
+    margin-right: 15px;
+}
+.margintop-15 {
+    margin-top: 15px;
+}
+.marginbottom-15 {
+    margin-bottom: 15px;
+}
+.margin-20 {
+    margin: 20px;
+}
+.marginleft-20 {
+    margin-left: 20px;
+}
+.marginright-20 {
+    margin-right: 20px;
+}
+.margintop-20 {
+    margin-top: 20px;
+}
+.marginbottom-20 {
+    margin-bottom: 20px;
+}
+
+
+/* ============= 字体大小 ============= */
+.fontsize-8 {
+    font-size: 8px;
+}
+.fontsize-10 {
+    font-size: 10px;
+}
+.fontsize-12 {
+    font-size: 12px;
+}
+.fontsize-14 {
+    font-size: 14px;
+}
+.fontsize-16 {
+    font-size: 16px;
+}
+.fontsize-18 {
+    font-size: 18px;
+}
+.fontsize-20 {
+    font-size: 20px;
+}
+.fontweight-600 {
+    font-weight: 600;
+}
+
+
+/* ============= 字体颜色 ============= */
+.color-white {
+    color: #fff;
+}
+
+
+/* ============= 图片大小 ============= */
+.img-12 {
+    width: 12px;
+    height: 12px;
+}
+.img-14 {
+    width: 14px;
+    height: 14px;
+}
+.img-16 {
+    width: 16px;
+    height: 16px;
+}
+.img-18 {
+    width: 18px;
+    height: 18px;
+}
+.img-20 {
+    width: 20px;
+    height: 20px;
+}
+.img-22 {
+    width: 22px;
+    height: 22px;
+}
+.img-24 {
+    width: 24px;
+    height: 24px;
+}
+.img-26 {
+    width: 26px;
+    height: 26px;
+}
+.img-28 {
+    width: 28px;
+    height: 28px;
+}
+.img-30 {
+    width: 30px;
+    height: 30px;
+}
+.img-32 {
+    width: 32px;
+    height: 32px;
+}
+.hover-img-32:hover {
+    width: 32px;
+    height: 32px;
+}
+

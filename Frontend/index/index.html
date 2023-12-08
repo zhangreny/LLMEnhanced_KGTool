@@ -13,20 +13,44 @@
 
 <body>
 <div class="width-100per" style="height:100vh;">
-
 <!-- 最顶部搜索栏 -->
 <div class="width-100per bg-gradient-left" style="height: 40px;">
 
 </div>
 <div class="width-100per flex-row bg-gradient-top" style="height: calc(100% - 40px);">
-    <div class="height-100per" style="width: 50px;"></div>
-    <div class="height-100per flex-row borderradius-6 bg-gradient-top-light" style="width: calc(100% - 50px)">
-        <div class="width-20per height-100per"></div>
-        <div class="width-80per height-100per bg-white borderradius-6-right"></div>
+<!-- 左侧的选项栏 -->
+<div class="height-100per flex-column align-center" style="width: 80px;">
+    <div class="cursor-pointer margintop-15 flex-column align-center">
+        <div class="navi-chosen borderradius-6 flex-column align-center justify-center" style="width: 36px;height: 36px;">
+            <img src="/static/global/images/navi-kg-build-chosen.png" class="img-32">
+        </div>
+        <span class="margintop-5 fontsize-12 color-white fontweight-600">KG构建</span>
+    </div>
+    <div class="cursor-pointer margintop-15 flex-column align-center">
+        <div class="borderradius-6 flex-column align-center justify-center" style="width: 36px;height: 36px;">
+            <img src="/static/global/images/navi-kg-app.png" class="img-28 hover-img-32">
+        </div>
+        <span class="margintop-5 fontsize-12 color-white fontweight-600">KG应用</span>
     </div>
 </div>
+<div id="main-box-container" class="height-100per flex-row borderradius-6 bg-gradient-top-light" style="width: calc(100% - 80px)">
+    <!-- 左侧的功能 -->
+    <div id="main-left-box" class="width-25per height-100per">
 
+    </div>
+    <!-- 中间的拖动条 -->
+    <div id="main-width-handler" class="height-100per width-changer" style="width:10px;">
+
+    </div>
+    <!-- 右侧的内容-->
+    <div id="main-right-box" class="width-75per height-100per bg-white borderradius-6-right" style="calc(75% - 10px);">
+    
+    </div>
 </div>
-</body>
+</div>
+</div>
 
+<script src="/static/global/WidthHandle.js"></script>
+
+</body>
 </html>
