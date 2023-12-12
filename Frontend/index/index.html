@@ -19,31 +19,44 @@
 </div>
 <div class="width-100per flex-row bg-gradient-top" style="height: calc(100% - 40px);">
 <!-- 左侧的选项栏 -->
-<div class="height-100per flex-column align-center" style="width: 80px;">
+<div class="height-100per flex-column align-center" style="width: 72px;">
     <div class="cursor-pointer margintop-15 flex-column align-center">
         <div class="navi-chosen borderradius-6 flex-column align-center justify-center" style="width: 36px;height: 36px;">
-            <img src="/static/global/images/navi-kg-build-chosen.png" class="img-32">
+            <img src="/static/global/images/navi-kg-build-chosen.png" class="img-28">
         </div>
-        <span class="margintop-5 fontsize-12 color-white fontweight-600">KG构建</span>
+        <span class="margintop-5 fontsize-10 color-white fontweight-600">KG构建</span>
     </div>
     <div class="cursor-pointer margintop-15 flex-column align-center">
         <div class="borderradius-6 flex-column align-center justify-center" style="width: 36px;height: 36px;">
-            <img src="/static/global/images/navi-kg-app.png" class="img-28 hover-img-32">
+            <img src="/static/global/images/navi-kg-app.png" class="img-24 hover-img-28">
         </div>
-        <span class="margintop-5 fontsize-12 color-white fontweight-600">KG应用</span>
+        <span class="margintop-5 fontsize-10 color-white fontweight-600">KG应用</span>
     </div>
 </div>
-<div id="main-box-container" class="height-100per flex-row borderradius-6 bg-gradient-top-light" style="width: calc(100% - 80px)">
+<div id="main-box-container" class="height-100per flex-row borderradius-6 bg-gradient-top-light" style="width: calc(100% - 72px)">
     <!-- 左侧的功能 -->
     <div id="main-left-box" class="width-25per height-100per">
-
+        <div class="width-100per borderbottom-grey flex-row align-center justify-between" style="height:49px;position:relative;">
+            <div class="marginleft-10 cursor-pointer borderradius-6 fontsize-14 padding-10-5 hover-bg-darkyellow fontweight-600 flex-row align-center">
+                <div id="db-icon-success" class="hidden marginright-5 borderradius-6 bg-green" style="width: 8px;height: 8px;"></div>
+                <div id="db-icon-fail" class="hidden marginright-5 borderradius-6 bg-red" style="width: 8px;height: 8px;"></div>
+                <div id="db-icon-nodb" class="marginright-5 borderradius-6 bg-grey" style="width: 8px;height: 8px;"></div>
+                <span id="db-uri">获取数据库中</span>
+                <img src="/static/global/images/down-thick.png" class="img-14 marginleft-5">
+            </div>
+            <div id="db-downcontainer" class="borderradius-6 bg-white border-darkgrey" style="width:300px;height:200px;position:absolute;top:42px;left:10px">
+                <div class="width-100per borderbottom-grey flex-row align-center" style="height:34px;">
+                    <span class="marginleft-10 fontsize-14">已连接</span>
+                </div> 
+            </div>
+        </div>
     </div>
     <!-- 中间的拖动条 -->
-    <div id="main-width-handler" class="height-100per width-changer" style="width:10px;">
+    <div id="main-width-handler" class="height-100per width-changer" style="width:2px;">
 
     </div>
     <!-- 右侧的内容-->
-    <div id="main-right-box" class="width-75per height-100per bg-white borderradius-6-right" style="calc(75% - 10px);">
+    <div id="main-right-box" class="width-75per height-100per bg-white" style="width: calc(75% - 2px);">
     
     </div>
 </div>

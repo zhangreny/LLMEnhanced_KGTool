@@ -2,6 +2,7 @@ body {
     font-family: Inter;
     padding: 0px;
     margin: 0px;
+    box-sizing: border-box !important;
 }
 span {
 	word-break: break-all;
@@ -10,7 +11,7 @@ span {
 
 /* ============= 顶部和侧边的背景颜色 ============= */
 .bg-gradient-top {
-    background: linear-gradient(to top, rgb(32, 81, 58), rgb(118, 78, 33) 80%, rgb(100, 77, 37));
+    background: linear-gradient(to top, rgb(32, 81, 58), rgb(100, 77, 37));
 }
 .bg-gradient-top-light {
     background: linear-gradient(to top, rgb(209, 224, 219), rgb(239, 232, 220) 80%, rgb(241, 232, 219));
@@ -102,6 +103,9 @@ span {
 
 
 /* ============= Flex常用布局 ============= */
+.hidden {
+    display: none;
+}
 .flex-row {
     display: flex;
     flex-direction: row;
@@ -137,14 +141,32 @@ span {
 .border-black {
     border: 1px solid #000;
 }
+.border-darkgrey {
+    border: 1px solid #8c8c8c;
+}
+.borderbottom-grey {
+    border-bottom: 1px solid #c4c4c4;
+}
 
 
 /* ============= 背景颜色 ============= */
 .bg-white {
     background-color: #fff;
 }
+.bg-grey {
+    background-color: #8c8c8c;
+}
 .bg-black {
     background-color: #000;
+}
+.bg-red{
+	background-color: #d81e06;
+}
+.bg-green{
+	background-color:  rgb(32,185,102);
+}
+.hover-bg-darkyellow:hover {
+    background-color: rgb(215, 203, 180);
 }
 
 
@@ -208,6 +230,9 @@ span {
 }
 .paddingbottom-20 {
     padding-bottom: 20px;
+}
+.padding-10-5 {
+    padding: 5px 10px 5px 10px;
 }
 .margin-5 {
     margin: 5px;
@@ -349,8 +374,8 @@ span {
     width: 32px;
     height: 32px;
 }
-.hover-img-32:hover {
-    width: 32px;
-    height: 32px;
+.hover-img-28:hover {
+    width: 28px;
+    height: 28px;
 }
 
