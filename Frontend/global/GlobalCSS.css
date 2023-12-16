@@ -2,12 +2,31 @@ body {
     font-family: Inter;
     padding: 0px;
     margin: 0px;
-    box-sizing: border-box !important;
+    box-sizing: border-box;
+}
+div {
+    box-sizing: border-box;
 }
 span {
 	word-break: break-all;
 }
-
+input {
+    outline: none;
+    caret-color: auto;
+}
+::-webkit-scrollbar-button {
+    display: none;
+}
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-thumb {
+    width: 8px;
+    height: 8px;
+    background-color: rgba(80, 80, 80, 0.7);
+    border-radius: 4px;
+}
 
 /* ============= 顶部和侧边的背景颜色 ============= */
 .bg-gradient-top {
@@ -138,13 +157,22 @@ span {
 
 
 /* ============= 边框样式 ============= */
+.border-none {
+    border: none;
+}
 .border-black {
     border: 1px solid #000;
 }
-.border-darkgrey {
+.border-grey {
     border: 1px solid #8c8c8c;
 }
-.borderbottom-grey {
+.border-lightgrey {
+    border: 1px solid #c4c4c4;
+}
+.bordertop-lightgrey {
+    border-top: 1px solid #c4c4c4;
+}
+.borderbottom-lightgrey {
     border-bottom: 1px solid #c4c4c4;
 }
 
@@ -156,6 +184,9 @@ span {
 .bg-grey {
     background-color: #8c8c8c;
 }
+.bg-lightgrey {
+    background-color: #c4c4c4;
+}
 .bg-black {
     background-color: #000;
 }
@@ -165,8 +196,17 @@ span {
 .bg-green{
 	background-color:  rgb(32,185,102);
 }
+.bg-darkgreen {
+    background-color: rgb(32, 81, 58)
+}
+.bg-darkyellow {
+    background-color: rgb(215, 203, 180);
+}
 .hover-bg-darkyellow:hover {
     background-color: rgb(215, 203, 180);
+}
+.hover-bg-lightgrey:hover {
+    background-color: #c4c4c4;
 }
 
 
@@ -327,9 +367,18 @@ span {
 .color-white {
     color: #fff;
 }
-
+.color-grey {
+    color: #8c8c8c;
+}
+.color-red {
+    color: #d81e06;
+}
 
 /* ============= 图片大小 ============= */
+.img-10 {
+    width: 10px;
+    height: 10px;
+}
 .img-12 {
     width: 12px;
     height: 12px;
@@ -379,3 +428,13 @@ span {
     height: 28px;
 }
 
+/* ============= overflow ============= */
+.overflow-auto {
+    overflow: auto;
+}
+.overflowx-auto {
+    overflow-x: auto;
+}
+.overflowy-auto {
+    overflow-y: auto;
+}

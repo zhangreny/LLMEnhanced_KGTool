@@ -12,6 +12,7 @@ app = Flask(__name__, static_folder="../Frontend", static_url_path="/static")
 app.register_blueprint(api_index)
 app.config["System_Config_filepath"] = "config.json"
 app.config["System_Config_dict"] = {}
+app.config["Neo4j_driver"] = "Neo4j_Driver"
 
 # 默认路由
 @app.route("/")

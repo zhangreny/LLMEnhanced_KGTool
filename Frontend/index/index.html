@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>大语言模型增强的知识图谱构建和应用</title>
     <link rel="stylesheet" href="/static/global/GlobalCSS.css">
-    <link rel="stylesheet" href="/static/index/index.css">
+    <link rel="stylesheet" href="/static/index/index.css">    
+    <link rel="stylesheet" href="/static/global/css/layui.css">
     <link rel="shortcut icon" href="/static/global/images/icon.png">
 </head>
 
@@ -36,18 +37,76 @@
 <div id="main-box-container" class="height-100per flex-row borderradius-6 bg-gradient-top-light" style="width: calc(100% - 72px)">
     <!-- 左侧的功能 -->
     <div id="main-left-box" class="width-25per height-100per">
-        <div class="width-100per borderbottom-grey flex-row align-center justify-between" style="height:49px;position:relative;">
-            <div class="marginleft-10 cursor-pointer borderradius-6 fontsize-14 padding-10-5 hover-bg-darkyellow fontweight-600 flex-row align-center">
+        <div class="width-100per borderbottom-lightgrey flex-row align-center justify-between" style="height:49px;position:relative;">
+            <div onclick="editdatabase()" class="marginleft-10 cursor-pointer borderradius-6 fontsize-14 padding-10-5 hover-bg-darkyellow fontweight-600 flex-row align-center">
                 <div id="db-icon-success" class="hidden marginright-5 borderradius-6 bg-green" style="width: 8px;height: 8px;"></div>
                 <div id="db-icon-fail" class="hidden marginright-5 borderradius-6 bg-red" style="width: 8px;height: 8px;"></div>
                 <div id="db-icon-nodb" class="marginright-5 borderradius-6 bg-grey" style="width: 8px;height: 8px;"></div>
-                <span id="db-uri">获取数据库中</span>
+                <span id="db-uri" style="margin-top: 2px;">获取数据库中</span>
                 <img src="/static/global/images/down-thick.png" class="img-14 marginleft-5">
             </div>
-            <div id="db-downcontainer" class="borderradius-6 bg-white border-darkgrey" style="width:300px;height:200px;position:absolute;top:42px;left:10px">
-                <div class="width-100per borderbottom-grey flex-row align-center" style="height:34px;">
-                    <span class="marginleft-10 fontsize-14">已连接</span>
+            <div id="db-downcontainer" class="hidden borderradius-6 bg-white border-grey" style="width:400px;height:205px;position:absolute;top:42px;left:10px">
+                <div class="width-100per borderbottom-lightgrey flex-row align-center justify-between" style="height:34px;">
+                    <span class="marginleft-10 fontsize-14">编辑鉴权信息</span>
+                    <div onclick="closeeditdatabase()" class="cursor-pointer borderradius-6 padding-5 hover-bg-lightgrey flex-row align-center marginright-5"><img src="/static/global/images/close.png" class="img-16"></div>
                 </div> 
+                <div class="margintop-5 width-100per flex-row align-center justify-between" style="height: 40px;">
+                    <span class="color-grey marginleft-10 fontsize-14">URI</span>
+                    <input class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: 260px;height:20px;">
+                </div>
+                <div class="width-100per flex-row align-center justify-between" style="height: 40px;">
+                    <span class="color-grey marginleft-10 fontsize-14">用户名</span>
+                    <input class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: 260px;height:20px;">
+                </div>
+                <div class="marginbottom-5 width-100per flex-row align-center justify-between" style="height: 40px;">
+                    <span class="color-grey marginleft-10 fontsize-14">密码</span>
+                    <input class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: 260px;height:20px;" type="password">
+                </div>
+                <div class="width-100per bordertop-lightgrey flex-row align-center justify-between" style="height:39px;">
+                    <div id="db-down-errmsg" class="marginleft-10 color-red fontsize-14"></div>
+                    <div class="flex-row align-center">
+                        <img id="db-loading" src="/static/global/images/loading.gif" class="hidden img-18 marginright-10">
+                        <button onclick="updatedatabase()" type="button" class="marginright-10 layui-btn layui-btn-normal" style="width:70px;border-radius:6px;font-weight:600;height:28px;line-height:28px;">
+                            保存
+                        </button>
+                    </div>
+                </div> 
+            </div>
+        </div>
+        <div id="domain-dimension-container" class="width-100per overflowy-auto paddingtop-10" style="height:calc(100% - 50px);">
+            <div id="ly-1" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="">
+                <img src="/static/global/images/right.png" class="img-10 marginright-5 marginleft-5">
+                <img src="/static/global/images/domain.png" class="img-20 marginright-5">
+                <span style="margin-bottom: 2px;">网络空间安全</span>
+            </div>
+            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
+                <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
+                <span style="margin-bottom: 2px;">学术</span>
+            </div>
+            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
+                <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
+                <span style="margin-bottom: 2px;">标准</span>
+            </div>
+            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
+                <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
+                <span style="margin-bottom: 2px;">工程</span>
+            </div>
+            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
+                <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
+                <span style="margin-bottom: 2px;">专利</span>
+            </div>
+            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
+                <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
+                <span style="margin-bottom: 2px;">技术</span>
+            </div>
+            
+            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
+                <div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px; margin-top: 1px;">+</div>
+                <span style="margin-bottom: 2px;">创建维度</span>
+            </div>
+            <div class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="">
+                <div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px; margin-top: 1px;">+</div>
+                <span style="margin-bottom: 2px;">创建新领域</span>
             </div>
         </div>
     </div>
@@ -57,13 +116,15 @@
     </div>
     <!-- 右侧的内容-->
     <div id="main-right-box" class="width-75per height-100per bg-white" style="width: calc(75% - 2px);">
-    
     </div>
 </div>
 </div>
 </div>
 
 <script src="/static/global/WidthHandle.js"></script>
+<script src="/static/index/index.js"></script>
+<script src="/static/global/jquery.js"></script>
+<script src="/static/global/layui.js" charset="utf-8"></script>
 
 </body>
 </html>
