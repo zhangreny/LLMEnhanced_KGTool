@@ -1,0 +1,35 @@
+.layui-tree-iconArrow{padding:0 5px}.layui-tree-iconArrow:after{content:"";position:absolute;left:4px;top:3px;z-index:100;width:0;height:0;border-width:5px;border-style:solid;border-color:transparent transparent transparent #c0c4cc;transition:.5s}.layui-tree-spread>.layui-tree-entry .layui-tree-iconClick>.layui-tree-iconArrow:after{transform:rotate(90deg) translate(3px,4px)}
+
+.layui-form-select dl dd.layui-this {
+    background-color: #69b4ff !important;
+}
+.layui-tree-entry {
+	height: 28px !important;
+}
+.layui-tree-txt{
+	margin-bottom: 5px;
+    font-size: 14px;
+    margin-left: -3px;
+}
+
+.custom-context-menu {
+    position: fixed;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    border-radius: 6px;
+    padding: 2px;
+}
+.menu-item {
+    width: 240px;
+    padding: 6px 12px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 6px;
+    font-size: 12px;
+}
+.menu-item:hover {
+    background-color: #f2f2f2;
+}
+

@@ -41,6 +41,19 @@ input {
 .navi-chosen {
     background-color: white;    
 }
+.bg-grey-to-white-top {
+    background: linear-gradient(to top, rgb(240, 243, 250), rgb(255, 255, 255));
+}
+
+/* ============= 选中的样式 ============= */
+.chosen-lightblue {
+    background-color: rgb(229, 243, 255);
+    color: rgb(0, 108, 228);
+    font-weight: 600;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
 
 
 /* ============= 中间的宽度拖动条 ============= */
@@ -206,7 +219,7 @@ input {
     background-color: rgb(215, 203, 180);
 }
 .hover-bg-lightgrey:hover {
-    background-color: #c4c4c4;
+    background-color: #e4e4e4;
 }
 
 
@@ -437,4 +450,9 @@ input {
 }
 .overflowy-auto {
     overflow-y: auto;
+}
+
+/* ============= 旋转 ============= */
+.transform-90 {
+    transform: rotate(90deg);
 }

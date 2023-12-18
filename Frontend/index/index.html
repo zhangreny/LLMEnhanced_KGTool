@@ -45,7 +45,7 @@
                 <span id="db-uri" style="margin-top: 2px;">获取数据库中</span>
                 <img src="/static/global/images/down-thick.png" class="img-14 marginleft-5">
             </div>
-            <div id="db-downcontainer" class="hidden borderradius-6 bg-white border-grey" style="width:400px;height:205px;position:absolute;top:42px;left:10px">
+            <div id="db-downcontainer" class="hidden borderradius-6 bg-white border-grey" style="z-index:2;;width:400px;height:205px;position:absolute;top:42px;left:10px">
                 <div class="width-100per borderbottom-lightgrey flex-row align-center justify-between" style="height:34px;">
                     <span class="marginleft-10 fontsize-14">编辑鉴权信息</span>
                     <div onclick="closeeditdatabase()" class="cursor-pointer borderradius-6 padding-5 hover-bg-lightgrey flex-row align-center marginright-5"><img src="/static/global/images/close.png" class="img-16"></div>
@@ -74,32 +74,20 @@
             </div>
         </div>
         <div id="domain-dimension-container" class="width-100per overflowy-auto paddingtop-10" style="height:calc(100% - 50px);">
-            <div id="ly-1" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="">
+            <!--
+            <div id="ly_1" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="">
                 <img src="/static/global/images/right.png" class="img-10 marginright-5 marginleft-5">
                 <img src="/static/global/images/domain.png" class="img-20 marginright-5">
                 <span style="margin-bottom: 2px;">网络空间安全</span>
             </div>
-            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
+            <div id="ly_1_wd_1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
                 <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
                 <span style="margin-bottom: 2px;">学术</span>
             </div>
-            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
+            <div id="ly_1_wd_1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
                 <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
                 <span style="margin-bottom: 2px;">标准</span>
             </div>
-            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
-                <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
-                <span style="margin-bottom: 2px;">工程</span>
-            </div>
-            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
-                <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
-                <span style="margin-bottom: 2px;">专利</span>
-            </div>
-            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
-                <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
-                <span style="margin-bottom: 2px;">技术</span>
-            </div>
-            
             <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
                 <div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px; margin-top: 1px;">+</div>
                 <span style="margin-bottom: 2px;">创建维度</span>
@@ -108,21 +96,94 @@
                 <div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px; margin-top: 1px;">+</div>
                 <span style="margin-bottom: 2px;">创建新领域</span>
             </div>
+            -->
         </div>
     </div>
     <!-- 中间的拖动条 -->
     <div id="main-width-handler" class="height-100per width-changer" style="width:2px;">
 
     </div>
-    <!-- 右侧的内容-->
-    <div id="main-right-box" class="width-75per height-100per bg-white" style="width: calc(75% - 2px);">
+    <!-- 右侧的内容-领域 -->
+    <div id="main-right-box-domain" class="flex-column width-75per height-100per bg-white" style="width: calc(75% - 2px);">
+        <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:49px">
+            <span id="detail-domain-name" class="fontweight-600 marginleft-15">领域</span>
+        </div>
+        <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:34px">
+            <div class="chosen-lightblue cursor-pointer padding-10-5 marginright-5 marginleft-15 borderradius-6 flex-row align-center">
+                <span class="fontsize-12">概览</span>
+            </div>
+            <div class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
+                <span class="fontsize-12">知识维度</span>
+            </div>
+            <div class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
+                <span class="fontsize-12">分类与本体</span>
+            </div>
+            <div class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
+                <span class="fontsize-12">知识素材</span>
+            </div>
+        </div>
+        <div class="width-100per overflowy-auto bg-grey-to-white-top" style="height: calc(100% - 85px)">
+        
+        </div>
+    </div>
+    <!-- 右侧的内容-维度 -->
+    <div id="main-right-box-dimension" class="flex-column width-75per height-100per bg-white" style="width: calc(75% - 2px);display: none;">
+        <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:49px">
+            <span id="detail-dimension-name" class="fontweight-600 marginleft-15">维度</span>
+        </div>
+        <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:34px">
+            <div name="dimensionfuncs" onclick="changedimensionpage(0)" class="chosen-lightblue cursor-pointer padding-10-5 marginright-5 marginleft-15 borderradius-6 flex-row align-center">
+                <span class="fontsize-12">概览</span>
+            </div>
+            <div name="dimensionfuncs" onclick="changedimensionpage(1)" class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
+                <span class="fontsize-12">分类与本体</span>
+            </div>
+            <div name="dimensionfuncs" onclick="changedimensionpage(2)" class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
+                <span class="fontsize-12">知识素材</span>
+            </div>
+        </div>
+        <!-- 维度概览页 -->
+        <div id="domain-page-0" class="flex-column width-100per overflowy-auto bg-grey-to-white-top" style="height: calc(100% - 85px)">
+            <div class="width-100per padding-15" style="height: 120px;">
+                <div class="width-100per height-100per borderradius-6 bg-white border-lightgrey">
+                    <div class="width-100per flex-row align-center fontsize-12 marginleft-10 fontweight-600" style="height: 30px;">概览</div>
+                    <div class="width-100per" style="height: calc(100% - 30px);"></div>
+                </div>
+            </div>
+            <div class="width-100per height-80per padding-15" style="padding-top: 0px;height: calc(100% - 120px)">
+                <div class="width-100per height-100per borderradius-6 bg-white border-lightgrey">
+                    <div class="width-100per flex-row align-center fontsize-12 marginleft-10 fontweight-600" style="height: 30px;">知识分类和素材</div>
+                    <div class="width-100per" style="height: calc(100% - 30px);"></div>
+                </div>
+            </div>
+        </div>
+        <!-- 分类与本体 -->
+        <div id="domain-page-1" class="width-100per overflowy-auto bg-grey-to-white-top" style="height: calc(100% - 85px); display: none;">
+            <div class="width-40per height-100per padding-15">
+                <div class="width-100per height-100per borderradius-6 bg-white border-lightgrey">
+                    <div class="width-100per flex-row align-center fontsize-12 marginleft-10 fontweight-600" style="height: 30px;">知识分类</div>
+                    <div id="classes-explorer" class="width-100per overflowy-auto" style="height: calc(100% - 30px);"></div>
+                </div>
+            </div>
+            <div class="width-60per height-100per padding-15" style="padding-left: 0px">
+                <div class="width-100per height-100per borderradius-6 bg-white border-lightgrey">
+                    <div class="width-100per flex-row align-center fontsize-12 marginleft-10 fontweight-600" style="height: 30px;">分类本体</div>
+                    <div class="width-100per" style="height: calc(100% - 30px);"></div>
+                </div>
+            </div>
+        </div>
+        <!-- 知识素材 -->
+        <div id="domain-page-2" class="width-100per overflowy-auto bg-grey-to-white-top" style="height: calc(100% - 85px); display: none;">
+            知识素材
+        </div>
     </div>
 </div>
 </div>
 </div>
 
 <script src="/static/global/WidthHandle.js"></script>
-<script src="/static/index/index.js"></script>
+<script src="/static/index/leftbar.js"></script>
+<script src="/static/index/dimensionpage.js"></script>
 <script src="/static/global/jquery.js"></script>
 <script src="/static/global/layui.js" charset="utf-8"></script>
 
