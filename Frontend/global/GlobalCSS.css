@@ -206,6 +206,9 @@ input {
 .bg-red{
 	background-color: #d81e06;
 }
+.bg-blue {
+    background-color: rgb(30, 159, 255);
+}
 .bg-green{
 	background-color:  rgb(32,185,102);
 }
@@ -376,7 +379,10 @@ input {
 }
 
 
-/* ============= 字体颜色 ============= */
+/* ============= 字体颜色和样式 ============= */
+.hover-text-underline:hover{
+	text-decoration: underline;
+}
 .color-white {
     color: #fff;
 }
@@ -385,6 +391,9 @@ input {
 }
 .color-red {
     color: #d81e06;
+}
+.color-blue {
+    color: #1C86EE;
 }
 
 /* ============= 图片大小 ============= */

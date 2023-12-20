@@ -216,6 +216,11 @@ function clickadddomain() {
 
 // 点击 <添加新维度>
 function clickadddimension(domainid) {
+    var previousContextMenu = document.getElementById('ly-wd-add-container')
+    if (previousContextMenu) {
+        var containerid = previousContextMenu.getElementsByTagName("img")[2].getAttribute("onclick").split("`")[1]
+        cancel_clickadddimension_css(containerid)
+    }
     var lycontainer = document.getElementById(domainid+"_wd_add")
     lycontainer.style.display = "none"
     var htmlToInsert = '<div id="ly-wd-add-container" class="padding-5 marginleft-10 marginright-10 borderradius-6 flex-row align-center" style="margin-left: 40px;"><img src="/static/global/images/dimension.png" class="img-16 marginright-5 marginleft-5"><input id="ly-wd-add-newdimension" class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: calc(100% - 95px);height:15px;"><img onclick="submitnewdimension(`'+domainid+'`)" class="img-20 cursor-pointer" src="/static/global/images/square-right.png"><img onclick="cancel_clickadddimension_css(`'+domainid+'_wd_add`)" class="img-22 marginleft-5 cursor-pointer" src="/static/global/images/square-wrong.png"></div>'
@@ -226,7 +231,7 @@ function clickadddimension(domainid) {
 
 // 取消 <添加新维度> 后样式变化
 function cancel_clickadddimension_css(containerid) {
-    var addcontainer = document.getElementById("ly-wd-add-container")
+    var addcontainer = document.getElementById("ly-wd-add-container").parentNode
     addcontainer.parentNode.removeChild(addcontainer)
     document.getElementById(containerid).style.display = "flex"
 }
@@ -315,7 +320,7 @@ function clickdomain(domainid) {
     const spanvalue = container.getElementsByTagName("span")[0].innerHTML
     document.getElementById("detail-domain-name").innerHTML = spanvalue
     // 点击概览
-    changedomainpage(0)
+    domainclicktab(0)
 }
 
 // 点击维度
@@ -347,5 +352,4 @@ function clickdimension(dimensionid) {
     const spanvalue = container.getElementsByTagName("span")[0].innerHTML
     document.getElementById("detail-dimension-name").innerHTML = spanvalue
     // 点击概览
-    changedimensionpage(0)
 }

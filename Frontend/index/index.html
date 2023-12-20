@@ -36,7 +36,7 @@
 </div>
 <div id="main-box-container" class="height-100per flex-row borderradius-6 bg-gradient-top-light" style="width: calc(100% - 72px)">
     <!-- 左侧的功能 -->
-    <div id="main-left-box" class="width-25per height-100per">
+    <div id="main-left-box" class="width-20per height-100per">
         <div class="width-100per borderbottom-lightgrey flex-row align-center justify-between" style="height:49px;position:relative;">
             <div onclick="editdatabase()" class="marginleft-10 cursor-pointer borderradius-6 fontsize-14 padding-10-5 hover-bg-darkyellow fontweight-600 flex-row align-center">
                 <div id="db-icon-success" class="hidden marginright-5 borderradius-6 bg-green" style="width: 8px;height: 8px;"></div>
@@ -45,22 +45,22 @@
                 <span id="db-uri" style="margin-top: 2px;">获取数据库中</span>
                 <img src="/static/global/images/down-thick.png" class="img-14 marginleft-5">
             </div>
-            <div id="db-downcontainer" class="hidden borderradius-6 bg-white border-grey" style="z-index:2;;width:400px;height:205px;position:absolute;top:42px;left:10px">
+            <div id="db-downcontainer" class="hidden borderradius-6 bg-white border-grey" style="z-index:999;width:330px;height:205px;position:absolute;top:42px;left:10px">
                 <div class="width-100per borderbottom-lightgrey flex-row align-center justify-between" style="height:34px;">
                     <span class="marginleft-10 fontsize-14">编辑鉴权信息</span>
                     <div onclick="closeeditdatabase()" class="cursor-pointer borderradius-6 padding-5 hover-bg-lightgrey flex-row align-center marginright-5"><img src="/static/global/images/close.png" class="img-16"></div>
                 </div> 
                 <div class="margintop-5 width-100per flex-row align-center justify-between" style="height: 40px;">
                     <span class="color-grey marginleft-10 fontsize-14">URI</span>
-                    <input class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: 260px;height:20px;">
+                    <input class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: 220px;height:20px;">
                 </div>
                 <div class="width-100per flex-row align-center justify-between" style="height: 40px;">
                     <span class="color-grey marginleft-10 fontsize-14">用户名</span>
-                    <input class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: 260px;height:20px;">
+                    <input class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: 220px;height:20px;">
                 </div>
                 <div class="marginbottom-5 width-100per flex-row align-center justify-between" style="height: 40px;">
                     <span class="color-grey marginleft-10 fontsize-14">密码</span>
-                    <input class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: 260px;height:20px;" type="password">
+                    <input class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: 220px;height:20px;" type="password">
                 </div>
                 <div class="width-100per bordertop-lightgrey flex-row align-center justify-between" style="height:39px;">
                     <div id="db-down-errmsg" class="marginleft-10 color-red fontsize-14"></div>
@@ -104,78 +104,50 @@
 
     </div>
     <!-- 右侧的内容-领域 -->
-    <div id="main-right-box-domain" class="flex-column width-75per height-100per bg-white" style="width: calc(75% - 2px);">
+    <div id="main-right-box-domain" class="flex-column width-75per height-100per bg-white" style="width: calc(80% - 2px);">
         <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:49px">
             <span id="detail-domain-name" class="fontweight-600 marginleft-15">领域</span>
         </div>
         <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:34px">
-            <div class="chosen-lightblue cursor-pointer padding-10-5 marginright-5 marginleft-15 borderradius-6 flex-row align-center">
+            <div name="domaintab" onclick="domainclicktab(0)" class="chosen-lightblue cursor-pointer padding-10-5 marginright-5 marginleft-15 borderradius-6 flex-row align-center">
                 <span class="fontsize-12">概览</span>
             </div>
-            <div class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
-                <span class="fontsize-12">知识维度</span>
-            </div>
-            <div class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
-                <span class="fontsize-12">分类与本体</span>
-            </div>
-            <div class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
-                <span class="fontsize-12">知识素材</span>
+            <div name="domaintab" onclick="domainclicktab(1)" class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
+                <span class="fontsize-12">设置</span>
             </div>
         </div>
-        <div class="width-100per overflowy-auto bg-grey-to-white-top" style="height: calc(100% - 85px)">
-        
+        <div id="domain-page-0" class="width-100per overflowy-auto bg-grey-to-white-top flex-column" style="height: calc(100% - 83px);">
+            <div class="width-100per padding-5 flex-row align-center" style="height:50px">
+                <div onclick="ChangeOntologyView(0)" class="marginleft-10 flex-row align-center justify-center border-lightgrey cursor-pointer graph-tab-clicked fontsize-12" style="border-radius: 6px 0px 0px 6px;height: 26px;width: 70px;">拓扑视图</div>
+                <div onclick="ChangeOntologyView(1)" class="flex-row align-center justify-center border-lightgrey cursor-pointer graph-tab-unclicked fontsize-12" style="border-radius: 0px 6px 6px 0px;height: 26px;width: 70px;">目录视图</div>
+            </div>
+            <div class="padding-15 width-100per" style="height: calc(100% - 50px);padding-top:0px; position: relative;">
+                <div id="domain-graph-tuli" class="fontsize-14 overflowy-auto flex-column" style="position: absolute; top: 5px; left: 20px; padding: 5px; background-color: #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);max-height: 200px;z-index: 2">
+                    <div>图例</div>
+                </div>
+                <div id="domain-graph-error" class="borderradius-6 border-lightgrey width-100per height-100per flex-row align-center justify-center" style="display: none;">
+                    <span class="fontsize-18 marginleft-10 fontweight-600" style="color: #d81e06;">[ERROR] 获取数据失败</span>
+                    <button onclick="GetDomainGraph()" type="button" class="marginleft-20 layui-btn layui-btn-normal" style="width:70px;border-radius:6px;font-weight:600;height:28px;line-height:28px;">
+                        重试
+                    </button>
+                </div>
+                <div id="domain-graph-loading" class="borderradius-6 border-lightgrey width-100per height-100per flex-row align-center justify-center" style="display: none;">
+                    <img src="/static/global/images/loading.gif" class="img-20">
+                    <span class="fontsize-18 marginleft-10 fontweight-600" style="color: #1c86ee;">获取数据中</span>
+                </div>
+                <div id="domain-graph" class="borderradius-6 border-lightgrey bg-grid-white width-100per height-100per" style="display: none;">
+                </div>
+                <div id="domain-graph-shaixuan" class="borderradius-6 flex-row cursor-pointer align-center padding-5 bg-blue" style="position: absolute; bottom: 20px; left: 20px;height: 28px">
+                    <img src="/static/global/images/shaixuan.png" class="img-16">
+                    <span class="color-white fontweight-600 fontsize-14" style="line-height: 24px; margin-left: 2px;">筛选</span>
+                </div>
+            </div>
+        </div>
+        <div id="domain-page-1" class="width-100per overflowy-auto bg-grey-to-white-top" style="height: calc(100% - 83px); display: none;">
         </div>
     </div>
     <!-- 右侧的内容-维度 -->
-    <div id="main-right-box-dimension" class="flex-column width-75per height-100per bg-white" style="width: calc(75% - 2px);display: none;">
-        <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:49px">
-            <span id="detail-dimension-name" class="fontweight-600 marginleft-15">维度</span>
-        </div>
-        <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:34px">
-            <div name="dimensionfuncs" onclick="changedimensionpage(0)" class="chosen-lightblue cursor-pointer padding-10-5 marginright-5 marginleft-15 borderradius-6 flex-row align-center">
-                <span class="fontsize-12">概览</span>
-            </div>
-            <div name="dimensionfuncs" onclick="changedimensionpage(1)" class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
-                <span class="fontsize-12">分类与本体</span>
-            </div>
-            <div name="dimensionfuncs" onclick="changedimensionpage(2)" class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
-                <span class="fontsize-12">知识素材</span>
-            </div>
-        </div>
-        <!-- 维度概览页 -->
-        <div id="domain-page-0" class="flex-column width-100per overflowy-auto bg-grey-to-white-top" style="height: calc(100% - 85px)">
-            <div class="width-100per padding-15" style="height: 120px;">
-                <div class="width-100per height-100per borderradius-6 bg-white border-lightgrey">
-                    <div class="width-100per flex-row align-center fontsize-12 marginleft-10 fontweight-600" style="height: 30px;">概览</div>
-                    <div class="width-100per" style="height: calc(100% - 30px);"></div>
-                </div>
-            </div>
-            <div class="width-100per height-80per padding-15" style="padding-top: 0px;height: calc(100% - 120px)">
-                <div class="width-100per height-100per borderradius-6 bg-white border-lightgrey">
-                    <div class="width-100per flex-row align-center fontsize-12 marginleft-10 fontweight-600" style="height: 30px;">知识分类和素材</div>
-                    <div class="width-100per" style="height: calc(100% - 30px);"></div>
-                </div>
-            </div>
-        </div>
-        <!-- 分类与本体 -->
-        <div id="domain-page-1" class="width-100per overflowy-auto bg-grey-to-white-top" style="height: calc(100% - 85px); display: none;">
-            <div class="width-40per height-100per padding-15">
-                <div class="width-100per height-100per borderradius-6 bg-white border-lightgrey">
-                    <div class="width-100per flex-row align-center fontsize-12 marginleft-10 fontweight-600" style="height: 30px;">知识分类</div>
-                    <div id="classes-explorer" class="width-100per overflowy-auto" style="height: calc(100% - 30px);"></div>
-                </div>
-            </div>
-            <div class="width-60per height-100per padding-15" style="padding-left: 0px">
-                <div class="width-100per height-100per borderradius-6 bg-white border-lightgrey">
-                    <div class="width-100per flex-row align-center fontsize-12 marginleft-10 fontweight-600" style="height: 30px;">分类本体</div>
-                    <div class="width-100per" style="height: calc(100% - 30px);"></div>
-                </div>
-            </div>
-        </div>
-        <!-- 知识素材 -->
-        <div id="domain-page-2" class="width-100per overflowy-auto bg-grey-to-white-top" style="height: calc(100% - 85px); display: none;">
-            知识素材
-        </div>
+    <div id="main-right-box-dimension" class="flex-column width-75per height-100per bg-white" style="width: calc(80% - 2px);display: none;">
     </div>
 </div>
 </div>
@@ -183,8 +155,9 @@
 
 <script src="/static/global/WidthHandle.js"></script>
 <script src="/static/index/leftbar.js"></script>
-<script src="/static/index/dimensionpage.js"></script>
+<script src="/static/index/domain-overview.js"></script>
 <script src="/static/global/jquery.js"></script>
+<script src="/static/global/d3v5.js"></script>
 <script src="/static/global/layui.js" charset="utf-8"></script>
 
 </body>
