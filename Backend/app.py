@@ -25,4 +25,4 @@ if __name__ == '__main__':
     with open(app.config["System_Config_filepath"], "r", encoding="utf-8") as json_file:
         app.config["System_Config_dict"] = json.load(json_file)
     # 运行app
-    app.run(host="127.0.0.1", port=6888)
+    app.run(host="0.0.0.0", port=6888)
