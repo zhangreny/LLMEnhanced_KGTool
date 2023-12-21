@@ -14,3 +14,23 @@
     background-size: 25% auto;
     background-repeat: repeat;
 }
+.domain-link{
+	stroke: #a8a8a8;
+	stroke-width: 1px;
+}
+.domain-relaname{
+	text-anchor: middle;
+	fill: #4b4b4b;
+	font-size: 8px;
+	user-select: none;
+}
+.domain-relaname:hover{
+	font-weight: 600;
+}
+.domain-node{
+	cursor: pointer;
+}
+.domain-node:hover{
+	stroke: rgb(177, 217, 251);
+	stroke-width: 4px;
+}
