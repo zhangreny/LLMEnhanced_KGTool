@@ -92,13 +92,17 @@ def api_createnewdomain():
             "领域描述": ""
         }
         with driver.session() as session:
+            resultid = list(session.run("match (x:领域名{name:'"+newdomain+"'}) RETURN id(x) as id"))
+        if len(resultid) > 0:
+            return json.dumps({"status": "fail", "resultdata": "知识库中已存在此领域名"})
+        with driver.session() as session:
             resultid = list(session.run("Create (x:领域名{name:'"+newdomain+"'}) set x+=$props RETURN id(x) as id", props=props))[0]["id"]
-        return json.dumps({"status": "success", "resultdata": {"name": newdomain, "id" :resultid}})
+        return json.dumps({"status": "success"})
     except Exception as e:
         print("#=========================#")
         print("[An Error Occurred]: " + str(e))
         print("===========================")
-        return json.dumps({"status": "fail", "resultdata": "添加领域名失败"})
+        return json.dumps({"status": "fail", "resultdata": str(e)})
 
 @api_index.route("/api/createnewdimensionofdomain", methods=["POST"], strict_slashes=False)
 def api_createnewdimensionofdomain():
@@ -108,6 +112,10 @@ def api_createnewdimensionofdomain():
         driver = current_app.config["Neo4j_Driver"] 
         with driver.session() as session:
             domainname = list(session.run("Match (x:领域名) where id(x)="+str(id)+" RETURN x.name as Name"))[0]["Name"]
+        with driver.session() as session:
+            resultid = list(session.run("match (x:维度名{name:'"+newdimension+"'}) where x.domain='" + domainname + "' RETURN id(x) as id"))
+        if len(resultid) > 0:
+            return json.dumps({"status": "fail", "resultdata": "领域内已存在此维度名"})
         props = {
             "domain": domainname,
             "dimension": newdimension,
@@ -121,18 +129,18 @@ def api_createnewdimensionofdomain():
                 tx.run("MATCH (m) where id(m)=" + str(resultid) + " MATCH (n) where id(n)=" + str(id) + " "
                             "Create (n)-[r:领域内知识维度]->(m) return id(r) as relaid")
                 tx.commit()
-                return json.dumps({"status": "success", "resultdata": {"name": newdimension, "id" :resultid}})
+                return json.dumps({"status": "success"})
             except Exception as e:
                 tx.rollback()
                 print("#=========================#")
                 print("[An Error Occurred]: " + str(e))
                 print("===========================")
-                return json.dumps({"status": "fail", "resultdata": "添加领域名失败"})
+                return json.dumps({"status": "fail", "resultdata": str(e)})
     except Exception as e:
         print("#=========================#")
         print("[An Error Occurred]: " + str(e))
         print("===========================")
-        return json.dumps({"status": "fail", "resultdata": "添加领域名失败"})
+        return json.dumps({"status": "fail", "resultdata": str(e)})
     
 @api_index.route("/api/getclassesofdimension", methods=["POST"], strict_slashes=False)
 def api_getclassesofdimension():

@@ -108,15 +108,15 @@ function updatedatabase() {
 function renderdomainsanddimensions(res) {
     const dimensionfinaladd_1 = '<div id="'
     const dimensionfinaladd_2 = '" onclick="clickadddimension(`'
-    const dimensionfinaladd_3 = '`)" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;"><div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px; margin-top: 3px;">+</div><span style="margin-top:1px">创建维度</span></div>'
+    const dimensionfinaladd_3 = '`)" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;"><div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px;">+</div><span style="line-height: 20px;">创建维度</span></div>'
     const domain_1 = '<div onclick="clickdomain(`'
     const domain_2 = '`)" id="'
     const domain_3 = '" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style=""><img onclick="ExpandandCollapse(`'
-    const domain_4 = '`)" src="/static/global/images/right.png" class="transform-90 img-10 marginright-5 marginleft-5"><img src="/static/global/images/domain.png" class="img-20 marginright-5"><span>'
+    const domain_4 = '`)" src="/static/global/images/right.png" class="transform-90 img-10 marginright-5 marginleft-5"><img src="/static/global/images/domain.png" class="img-20 marginright-5"><span style="line-height: 22px;">'
     const domain_5 = '</span></div>'
     const dimension_1 = '<div onclick="clickdimension(`'
     const dimension_2 = '`)" id="'
-    const dimension_3 = '" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;"><img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;"><span style="margin-bottom: 2px;">'
+    const dimension_3 = '" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;"><img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;"><span style="line-height: 20px;">'
     const dimension_4 = '</span></div>'
     const container = $("div#domain-dimension-container")
     for (var i=0; i<res.domains.length; i++) {
@@ -149,7 +149,7 @@ function getdomainsanddimensions() {
                 sessionStorage.setItem("domainsanddimensions", JSON.stringify(res))
                 renderdomainsanddimensions(res)
             }
-            const domainfinaladd = '<div id="ly-add" onclick="clickadddomain()" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style=""><div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px; margin-top: 1px;">+</div><span style="margin-bottom: 2px;">创建新领域</span></div>'
+            const domainfinaladd = '<div id="ly-add" onclick="clickadddomain()" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style=""><div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px; margin-top: 1px;">+</div><span style="line-height: 22px;">创建新领域</span></div>'
             $(domainfinaladd).appendTo(container)
         }
     })
@@ -196,7 +196,7 @@ function ExpandandCollapse(domainid) {
 function clickadddomain_css() {
     var targetDiv = document.getElementById('ly-add')
     document.getElementById("ly-add").style.display = "none"
-    var htmlToInsert = '<div id="ly-add-container" class="padding-5 marginleft-10 marginright-10 borderradius-6 flex-row align-center" style=""><img src="/static/global/images/domain.png" class="img-20 marginright-5 marginleft-5"><input id="ly-add-newdomain" class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: calc(100% - 100px);height:15px;"><img onclick="submitnewdomain()" class="img-20 cursor-pointer" src="/static/global/images/square-right.png"><img onclick="cancel_clickadddomain_css()" class="img-22 marginleft-5 cursor-pointer" src="/static/global/images/square-wrong.png"></div>'
+    var htmlToInsert = '<div id="ly-add-container" class="padding-5 marginleft-10 marginright-10 borderradius-6 flex-row align-center" style=""><img src="/static/global/images/domain.png" class="img-20 marginright-5 marginleft-5"><input onkeydown="domain_handlekeydown(event)" id="ly-add-newdomain" class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: calc(100% - 10px);height:15px;"><img onclick="submitnewdomain()" class="img-20 cursor-pointer" src="/static/global/images/square-right.png"><img onclick="cancel_clickadddomain_css()" class="img-22 marginleft-5 cursor-pointer" src="/static/global/images/square-wrong.png"><img class="img-22 marginleft-5 hidden" src="/static/global/images/loading.gif"></div>'
     var newElement = document.createElement('div')
     newElement.innerHTML = htmlToInsert
     targetDiv.parentNode.insertBefore(newElement, targetDiv)
@@ -223,7 +223,7 @@ function clickadddimension(domainid) {
     }
     var lycontainer = document.getElementById(domainid+"_wd_add")
     lycontainer.style.display = "none"
-    var htmlToInsert = '<div id="ly-wd-add-container" class="padding-5 marginleft-10 marginright-10 borderradius-6 flex-row align-center" style="margin-left: 40px;"><img src="/static/global/images/dimension.png" class="img-16 marginright-5 marginleft-5"><input id="ly-wd-add-newdimension" class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: calc(100% - 95px);height:15px;"><img onclick="submitnewdimension(`'+domainid+'`)" class="img-20 cursor-pointer" src="/static/global/images/square-right.png"><img onclick="cancel_clickadddimension_css(`'+domainid+'_wd_add`)" class="img-22 marginleft-5 cursor-pointer" src="/static/global/images/square-wrong.png"></div>'
+    var htmlToInsert = '<div id="ly-wd-add-container" class="padding-5 marginleft-10 marginright-10 borderradius-6 flex-row align-center" style="margin-left: 40px;"><img src="/static/global/images/dimension.png" class="img-16 marginright-5 marginleft-5"><input onkeydown="dimension_handlekeydown(`'+domainid+'`, event)" id="ly-wd-add-newdimension" class="padding-5 borderradius-6 border-lightgrey marginright-10" style="width: calc(100% - 10px);height:15px;"><img onclick="submitnewdimension(`'+domainid+'`)" class="img-20 cursor-pointer" src="/static/global/images/square-right.png"><img onclick="cancel_clickadddimension_css(`'+domainid+'_wd_add`)" class="img-22 marginleft-5 cursor-pointer" src="/static/global/images/square-wrong.png"><img class="img-22 marginleft-5 hidden" src="/static/global/images/loading.gif"></div>'
     var newElement = document.createElement('div')
     newElement.innerHTML = htmlToInsert
     lycontainer.parentNode.insertBefore(newElement, lycontainer)
@@ -239,6 +239,15 @@ function cancel_clickadddimension_css(containerid) {
 // 点击上传新领域
 function submitnewdomain() {
     const newdomain = document.getElementById("ly-add-newdomain").value
+    if (newdomain == "") {
+        return
+    }
+    const container = document.getElementById("ly-add-container")
+    const imgs = container.getElementsByTagName("img")
+    imgs[1].classList.add("hidden")
+    imgs[2].classList.add("hidden")
+    imgs[3].classList.remove("hidden")
+
     var formFile = new FormData()
     formFile.append("newdomain", newdomain)
     var data = formFile;
@@ -252,9 +261,11 @@ function submitnewdomain() {
         contentType: false,
         success: function (res) {
             if(res.status == "fail") {
-                cancel_clickadddomain_css(domainid+"_wd_add")
+                Showmsg("fail", "添加领域 " + newdomain + " 失败：" + res.resultdata)
+                cancel_clickadddomain_css()
             }
             else if(res.status == "success") {
+                Showmsg("success", "添加领域 " + newdomain + " 成功")
                 getdomainsanddimensions()
             }
         }
@@ -265,6 +276,15 @@ function submitnewdomain() {
 function submitnewdimension(domainid) {
     const id = parseInt(domainid.slice(3))
     const newdimension = document.getElementById("ly-wd-add-newdimension").value
+    if (newdimension == "") {
+        return
+    }
+    const container = document.getElementById("ly-wd-add-container")
+    const imgs = container.getElementsByTagName("img")
+    imgs[1].classList.add("hidden")
+    imgs[2].classList.add("hidden")
+    imgs[3].classList.remove("hidden")
+
     var formFile = new FormData()
     formFile.append("id", id)
     formFile.append("newdimension", newdimension)
@@ -279,9 +299,11 @@ function submitnewdimension(domainid) {
         contentType: false,
         success: function (res) {
             if(res.status == "fail") {
-                cancel_clickadddimension_css()
+                Showmsg("fail", "添加维度 " + newdimension + " 失败：" + res.resultdata)
+                cancel_clickadddimension_css(domainid + "_wd_add")
             }
             else if(res.status == "success") {
+                Showmsg("success", "添加维度 " + newdimension + " 成功")
                 getdomainsanddimensions()
             }
         }
@@ -352,4 +374,40 @@ function clickdimension(dimensionid) {
     const spanvalue = container.getElementsByTagName("span")[0].innerHTML
     document.getElementById("detail-dimension-name").innerHTML = spanvalue
     // 点击概览
+}
+
+function Showmsg(status, printstring) {
+    const msg = document.getElementById("msg")
+    msg.classList.remove("layui-anim-down")
+    const imgs = msg.getElementsByTagName("img")
+    if (status == "success") {
+        imgs[1].classList.add("hidden")
+        imgs[0].classList.remove("hidden")
+        msg.getElementsByTagName("span")[0].innerHTML = printstring
+    }
+    else {
+        imgs[0].classList.add("hidden")
+        imgs[1].classList.remove("hidden")
+        msg.getElementsByTagName("span")[0].innerHTML = printstring
+    }
+    msg.style.display = "flex"
+    msg.classList.remove("layui-anim-fadeout")
+    msg.classList.add("layui-anim-down")
+    var halfWidth = msg.getBoundingClientRect().width / 2;
+    msg.style.marginLeft = `-${halfWidth}px`;
+    setTimeout(() => {
+        msg.classList.add("layui-anim-fadeout")
+    }, 2000)
+}
+
+function domain_handlekeydown(event) {
+    if (event.key === "Enter") {
+        submitnewdomain()
+    }
+}
+
+function dimension_handlekeydown(domainid, event) {
+    if (event.key === "Enter") {
+        submitnewdimension(domainid)
+    }
 }
