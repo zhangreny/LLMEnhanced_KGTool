@@ -263,3 +263,135 @@ function drawgraphfromjson(divid, nodesandlinks) {
             return d.name
         })
 }
+
+// 关闭创建窗口
+function closeadd() {
+    var imgs = document.getElementById("domain-graph-add-button").getElementsByTagName("img")
+    document.getElementById("domain-graph-add").style.display = "none"
+    imgs[1].classList.add("hidden")
+    imgs[0].classList.remove("hidden")
+}
+
+// 打开创建窗口
+function openadd() {
+    var imgs = document.getElementById("domain-graph-add-button").getElementsByTagName("img")
+    document.getElementById("domain-graph-add").style.display = "flex"
+    imgs[0].classList.add("hidden")
+    imgs[1].classList.remove("hidden")
+    var container = document.getElementById("domain-graph-add")
+}
+
+// 在图的视图中添加知识
+function domaingraphadd() {
+    if (document.getElementById("domain-graph-add").style.display == "flex") {
+        closeadd()
+    }
+    else if (document.getElementById("domain-graph-add").style.display == "none") {
+        openadd()
+    }
+
+} 
+
+// 关闭popup弹窗
+function clickelsewhereclosepopup(event) {
+    const containers = document.querySelectorAll('#popup [id^="popupcontainer-"]')
+    if (!containers[0].contains(event.target)) {
+        clickclosepopup()
+    }
+}
+
+function clickclosepopup() {
+    const containers = document.querySelectorAll('#popup [id^="popupcontainer-"]')
+    for (var i=0; i<containers.length; i++) {
+        containers[i].style.display = "none"
+    }
+    document.getElementById("popup").style.display = "none"
+}
+
+
+// 点击了添加新维度
+function domain_clickadddomain() {
+    const container = $("div#popup").empty()
+    document.getElementById("popup").style.display = "flex"
+    const adddomain = `
+    <div id="popupcontainer-adddimension" class="borderradius-6 padding-25 bg-white flex-column" style="width: 450px;padding-left:30px;padding-bottom:10px">
+        <!-- 标题和关闭按钮 -->
+        <div class="width-100per flex-row align-center justify-between marginbottom-10">
+            <span class="fontsize-20 fontweight-600">添加维度</span>
+            <div onclick="clickclosepopup()" class="cursor-pointer borderradius-6 padding-5 hover-bg-lightgrey flex-row align-center marginright-5"><img src="/static/global/images/close.png" class="img-22"></div>
+        </div>
+        <!-- 标题 -->
+        <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
+            所属领域
+        </div>
+        <!-- 内容-输入框 -->
+        <input id="popup-domain-adddimension-domainname" class="margintop-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 25px);">
+        <!-- 分割 -->
+        <div class="width-100per" style="height:10px;"></div>
+        <!-- 标题 -->
+        <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
+            维度名
+        </div>
+        <!-- 内容-输入框 -->
+        <input id="popup-domain-adddimension-dimensionname" class="margintop-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 25px);">
+        <!-- 分割 -->
+        <div class="width-100per" style="height:10px;"></div>
+        <!-- 标题 -->
+        <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
+            维度描述
+        </div>
+        <!-- 内容-输入框 -->
+        <textarea id="popup-domain-adddimension-description" class="margintop-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 25px);height:100px;resize:none"></textarea>
+        <!-- 错误信息和提交按钮 -->
+        <div class="width-100per margintop-15 flex-row align-center justify-between" style="height:39px;">
+            <div id="popup-domain-adddimension-errmsg" class="color-red fontsize-14" style="margin-bottom:6px"></div>
+            <div class="flex-row align-center">
+                <img id="popup-domain-adddimension-loading" src="/static/global/images/loading.gif" class="hidden img-18 marginright-10">
+                <button onclick="domain_submitnewdimension()" type="button" class="layui-btn layui-btn-normal" style="width:70px;border-radius:6px;font-weight:600;height:28px;line-height:28px;">
+                    保存
+                </button>
+            </div>
+        </div> 
+    </div>
+    `
+    $(adddomain).appendTo(container)
+    document.getElementById("popup-domain-adddimension-domainname").value = document.getElementById("detail-domain-name").innerHTML
+    document.getElementById("popup-domain-adddimension-domainname").readOnly = true
+}
+
+function domain_submitnewdimension() {
+    document.getElementById("popup-domain-adddimension-errmsg").innerHTML = ""
+    const domainid = currentdomainid
+    const domainname = document.getElementById("popup-domain-adddimension-domainname").value
+    const dimensionname = document.getElementById("popup-domain-adddimension-dimensionname").value
+    const description = document.getElementById("popup-domain-adddimension-description").value
+    if (dimensionname == "") {
+        document.getElementById("popup-domain-adddimension-errmsg").innerHTML = "请输入维度名"
+        return
+    } 
+    var formFile = new FormData()
+    formFile.append("id", domainid)
+    formFile.append("newdimension", dimensionname)
+    formFile.append("description", description)
+    var data = formFile;
+    $.ajax({
+        url: "/api/createnewdimensionofdomain",
+        data: data,
+        type: "POST",
+        dataType: "json",
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+            if(res.status == "fail") {
+                document.getElementById("popup-domain-adddimension-errmsg").innerHTML = res.resultdata
+            }
+            else if(res.status == "success") {
+                clickclosepopup()
+                Showmsg("success", "添加维度 " + dimensionname + " 成功")
+                getdomainsanddimensions()
+            }
+        }
+    })
+
+}

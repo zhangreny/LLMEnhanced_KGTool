@@ -109,6 +109,10 @@ def api_createnewdimensionofdomain():
     try:
         id = request.form["id"]
         newdimension = request.form["newdimension"]
+        try:
+            description = request.form["description"]
+        except:
+            description = ""
         driver = current_app.config["Neo4j_Driver"] 
         with driver.session() as session:
             domainname = list(session.run("Match (x:领域名) where id(x)="+str(id)+" RETURN x.name as Name"))[0]["Name"]
@@ -120,7 +124,7 @@ def api_createnewdimensionofdomain():
             "domain": domainname,
             "dimension": newdimension,
             "维度名": newdimension,
-            "维度描述": ""
+            "维度描述": description
         }
         with driver.session() as session:
             tx = session.begin_transaction()

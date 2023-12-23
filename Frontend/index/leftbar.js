@@ -99,6 +99,7 @@ function updatedatabase() {
                 inputs[1].value = res.resultdata.username
                 inputs[2].value = res.resultdata.password
                 closeeditdatabase()
+                getdomainsanddimensions()
             }
         }
     })
@@ -141,15 +142,24 @@ function getdomainsanddimensions() {
         url: "/api/getdomainsanddimensions",
         method: "GET",
         success: function(res2) {
+            closeadd()
             currentdomainid = -1
             currentdimensionid = -1
             const res = JSON.parse(res2)
             const container = $("div#domain-dimension-container").empty()
             if (res.domains.length > 0) {
+                document.getElementById("main-right-box-nodata").style.display = "none"
+                document.getElementById("main-right-box-domain").style.display = "flex"
+                document.getElementById("main-right-box-dimension").style.display = "none"
                 sessionStorage.setItem("domainsanddimensions", JSON.stringify(res))
                 renderdomainsanddimensions(res)
             }
-            const domainfinaladd = '<div id="ly-add" onclick="clickadddomain()" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style=""><div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px; margin-top: 1px;">+</div><span style="line-height: 22px;">创建新领域</span></div>'
+            else {
+                document.getElementById("main-right-box-nodata").style.display = "flex"
+                document.getElementById("main-right-box-domain").style.display = "none"
+                document.getElementById("main-right-box-dimension").style.display = "none"
+            }
+            const domainfinaladd = '<div id="ly-add" onclick="clickadddomain()" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style=""><div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px;">+</div><span style="line-height: 22px;">创建新领域</span></div>'
             $(domainfinaladd).appendTo(container)
         }
     })
@@ -200,6 +210,7 @@ function clickadddomain_css() {
     var newElement = document.createElement('div')
     newElement.innerHTML = htmlToInsert
     targetDiv.parentNode.insertBefore(newElement, targetDiv)
+    document.getElementById("ly-add-newdomain").focus()
 }
 
 // 取消 <添加新领域> 后样式变化
@@ -227,6 +238,7 @@ function clickadddimension(domainid) {
     var newElement = document.createElement('div')
     newElement.innerHTML = htmlToInsert
     lycontainer.parentNode.insertBefore(newElement, lycontainer)
+    document.getElementById("ly-wd-add-newdimension").focus()
 }
 
 // 取消 <添加新维度> 后样式变化
