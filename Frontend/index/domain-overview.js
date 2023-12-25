@@ -17,6 +17,7 @@ function domainclicktab(index) {
     // 内容切换
     if (index == 0) {
         GetDomainGraph()
+        GetDomainTree()
     }
 }
 
@@ -53,6 +54,60 @@ function GetDomainGraph() {
         }
     })
 }
+
+// 获取领域树状结构
+function GetDomainTree() {
+    var formFile = new FormData()
+    formFile.append("domainid", currentdomainid)
+    var data = formFile;
+    $.ajax({
+        url: "/api/getalltreesofdomain",
+        data: data,
+        type: "POST",
+        dataType: "json",
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+            if(res.status == "fail") {
+                /*
+                document.getElementById("domain-graph-loading").style.display = "none"
+                document.getElementById("domain-graph").style.display = "none"
+                document.getElementById("domain-graph-error").style.display = "flex"
+                */
+            }
+            else if(res.status == "success") {
+                const container = $("div#domain-tree").empty()
+                sessionStorage.setItem("domaintreejson", res.resultdata)
+                res.resultdata[0].level = 0
+                let queue = res.resultdata.slice()
+                addclasses_classid = -1
+                while (queue.length > 0) {
+                    let item = queue.shift()
+                    // 绘制
+                    var classstr = `
+                        <div id="domain_tree_`+item.id.toString()+`" onclick="domaintree_click(`+item.id.toString()+`, '`+item.name+`')" class="padding-10-5 cursor-pointer hover-bg-lightgrey" style="margin-left: `+(item.level*24).toString()+`px">
+                            `+ item.name +`
+                        </div>
+                    `
+                    $(classstr).appendTo(container)
+                    if (item.children && item.children.length > 0) {
+                        for (var j=0; j<item.children.length; j++) {
+                            item.children[item.children.length - 1 - j].level = item.level + 1
+                            queue.unshift(item.children[item.children.length - 1 - j])
+                        }
+                    }
+                }
+            }
+        }
+    })
+}
+
+function domaintree_click(id, name) {
+    GetrelatedGraph(id)
+}
+
+
 
 // 获取相邻节点的id
 function GetrelatedGraph(id) {

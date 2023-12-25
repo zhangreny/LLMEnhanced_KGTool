@@ -472,3 +472,57 @@ def api_uploadclassestodimension():
         print("[An Error Occurred]: " + str(e))
         print("===========================")
         return json.dumps({"status": "fail", "resultdata": str(e)})
+    
+@api_index.route("/api/getalltreesofdomain", methods=["POST"], strict_slashes=False)
+def api_getalltreesofdomain():
+    domainid = request.form["domainid"]
+    driver = current_app.config["Neo4j_Driver"]
+    try:
+        with driver.session() as session:
+            session.run("MATCH (x) RETURN x limit 1")
+    except Exception as e:
+        print("#=========================#")
+        print("[An Error Occurred]: " + str(e))
+        print("===========================")
+        return json.dumps({"status": "fail", "resultdata": "获取领域树状结构失败"})
+    res = {}
+    res["nodes"] = []
+    res["links"] = []
+    try:
+        with driver.session() as session:
+            domainnode = list(session.run("MATCH (n:领域名) where id(n)=" + domainid + " return n.name as Name, labels(n) as Label, id(n) as Id"))[0]
+        node = {}
+        node["name"] = domainnode["Name"]
+        node["id"] = domainnode["Id"]
+        node["label"] = domainnode["Label"][0]
+        node["title"] = domainnode["Name"]
+        node["children"] = []
+        tree = node
+        queue = [[domainnode["Id"], []]]  # 初始节点的ID，初始节点的children树无需寻找为空
+        with driver.session() as session:
+            while queue:
+                currentpop = queue.pop(0)
+                current_id, current_treepath = currentpop[0], currentpop[1]
+                result = list(session.run("MATCH (m)-[r]->(n) WHERE ID(m)=" + str(current_id)+ " return n.name as Name, labels(n) as Label, id(n) as Id"))
+                for i in range(len(result)):
+                    record = result[i]
+                    node = {}
+                    node["name"] = record["Name"]
+                    node["id"] = record["Id"]
+                    node["label"] = record["Label"][0]
+                    node["title"] = record["Name"]
+                    node["children"] = []
+                    current_treeroot = tree
+                    for j in range(len(current_treepath)):
+                        current_treeroot = current_treeroot["children"][current_treepath[j]]
+                    current_treeroot["children"].append(node)
+                    copied_current_treepath = deepcopy(current_treepath + [i])
+                    queue.append([record["Id"], copied_current_treepath])
+        res = []
+        res.append(tree)
+        return json.dumps({"status": "success", "resultdata": res})
+    except Exception as e:
+        print("#=========================#")
+        print("[An Error Occurred]: " + str(e))
+        print("===========================")
+        return json.dumps({"status": "fail", "resultdata": "获取领域树状结构失败"})

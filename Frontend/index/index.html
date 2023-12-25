@@ -134,14 +134,14 @@
         </div>
         <div id="domain-page-0" class="width-100per overflowy-auto bg-grey-to-white-top flex-column" style="height: calc(100% - 83px);">
             <div class="width-100per padding-5 flex-row align-center justify-between" style="height:50px;position: relative;">
-                <div class="flex-row align-center">
-                    <div onclick="ChangeOntologyView(0)" class="marginleft-10 flex-row align-center justify-center border-lightgrey cursor-pointer graph-tab-clicked fontsize-12" style="border-radius: 6px 0px 0px 6px;height: 26px;width: 70px;">拓扑视图</div>
-                    <div onclick="ChangeOntologyView(1)" class="flex-row align-center justify-center border-lightgrey cursor-pointer graph-tab-unclicked fontsize-12" style="border-radius: 0px 6px 6px 0px;height: 26px;width: 70px;">目录视图</div>
+                <div id="domain-graph-shaixuan" class="marginleft-10 borderradius-6 flex-row cursor-pointer align-center padding-10-5 bg-blue hover-bg-blue-2" style="height: 28px">
+                    <img src="/static/global/images/shaixuan.png" class="img-16">
+                    <span class="color-white fontweight-600 fontsize-14" style="line-height: 24px; margin-left: 2px;">筛选</span>
                 </div>
                 <div id="domain-graph-add-button" onclick="domaingraphadd()" class="cursor-pointer borderradius-6 fontsize-14 flex-row align-center justify-center bg-blue marginright-10 hover-bg-blue-2" style="width: 70px;height: 28px;z-index: 10;">
                     <span class="color-white fontweight-600" style="line-height: 28px;">创建</span>
-                    <img src="/static/global/images/down-thick-white.png" class="img-12 marginleft-5" style="">
-                    <img src="/static/global/images/up-thick-white.png" class="hidden img-12 marginleft-5" style="">
+                    <img src="/static/global/images/down-thick-white.png" class="img-12 marginleft-5">
+                    <img src="/static/global/images/up-thick-white.png" class="hidden img-12 marginleft-5">
                 </div>
                 <div id="domain-graph-add" class="border-lightgrey borderradius-6 flex-column" style="position: absolute; top: 5px; right: 10px; width: 240px; box-shadow: 0 0px 10px rgba(0, 0, 0, 0.3);z-index: 3;display: none">
                     <div class="width-100per borderbottom-lightgrey flex-row fontsize-12 color-grey" style="height:39px;line-height: 39px">
@@ -163,25 +163,22 @@
                     </div>
                 </div>
             </div>
-            <div class="padding-15 width-100per" style="height: calc(100% - 50px);padding-top:0px; position: relative;">
-                <div id="domain-graph-tuli" class="fontsize-14 overflowy-auto flex-column" style="position: absolute; top: 5px; left: 20px; padding: 5px; background-color: #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);max-height: 200px;z-index: 2">
+            <div class="padding-15 width-100per flex-row align-center" style="height: calc(100% - 50px);padding-top:0px; position: relative;">
+                <div id="domain-tree" class="overflow-auto marginright-10 height-100per borderradius-6 border-lightgrey bg-white" style="width: calc(25% - 10px);"></div>
+                <div id="domain-graph-tuli" class="fontsize-14 overflowy-auto flex-column" style="position: absolute; top: 5px; left: calc(25% + 12px); padding: 5px; background-color: #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);max-height: 200px;z-index: 2">
                     <div>图例</div>
                 </div>
-                <div id="domain-graph-error" class="borderradius-6 border-lightgrey width-100per height-100per flex-row align-center justify-center" style="display: none;">
+                <div id="domain-graph-error" class="borderradius-6 border-lightgrey width-75per height-100per flex-row align-center justify-center" style="display: none;">
                     <span class="fontsize-18 marginleft-10 fontweight-600" style="color: #d81e06;">[ERROR] 获取数据失败</span>
                     <button onclick="GetDomainGraph()" type="button" class="marginleft-20 layui-btn layui-btn-normal" style="width:70px;border-radius:6px;font-weight:600;height:28px;line-height:28px;">
                         重试
                     </button>
                 </div>
-                <div id="domain-graph-loading" class="borderradius-6 border-lightgrey width-100per height-100per flex-row align-center justify-center" style="display: none;">
+                <div id="domain-graph-loading" class="borderradius-6 border-lightgrey width-75per height-100per flex-row align-center justify-center" style="display: none;">
                     <img src="/static/global/images/loading.gif" class="img-20">
                     <span class="fontsize-18 marginleft-10 fontweight-600" style="color: #1c86ee;">获取数据中</span>
                 </div>
-                <div id="domain-graph" class="borderradius-6 border-lightgrey bg-grid-white width-100per height-100per" style="display: none;">
-                </div>
-                <div id="domain-graph-shaixuan" class="borderradius-6 flex-row cursor-pointer align-center padding-10-5 bg-blue hover-bg-blue-2" style="position: absolute; bottom: 20px; left: 20px;height: 28px">
-                    <img src="/static/global/images/shaixuan.png" class="img-16">
-                    <span class="color-white fontweight-600 fontsize-14" style="line-height: 24px; margin-left: 2px;">筛选</span>
+                <div id="domain-graph" class="borderradius-6 border-lightgrey bg-grid-white width-75per height-100per" style="display: none;">
                 </div>
             </div>
         </div>
