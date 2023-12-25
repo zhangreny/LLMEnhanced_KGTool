@@ -20,6 +20,9 @@ function CheckDatabaseConnection() {
                 document.getElementById("db-icon-nodb").classList.remove("hidden")
                 document.getElementById("db-icon-fail").classList.add("hidden")
                 document.getElementById("db-icon-success").classList.add("hidden")
+                document.getElementById("main-right-box-nodata").style.display = "flex"
+                document.getElementById("main-right-box-domain").style.display = "none"
+                document.getElementById("main-right-box-dimension").style.display = "none"
             }
             else if(res.status == "fail") {
                 document.getElementById("db-uri").innerHTML = res.resultdata.uri
@@ -29,6 +32,9 @@ function CheckDatabaseConnection() {
                 inputs[0].value = res.resultdata.uri
                 inputs[1].value = res.resultdata.username
                 inputs[2].value = res.resultdata.password
+                document.getElementById("main-right-box-nodata").style.display = "flex"
+                document.getElementById("main-right-box-domain").style.display = "none"
+                document.getElementById("main-right-box-dimension").style.display = "none"
             }
             else if(res.status == "success") {
                 document.getElementById("db-uri").innerHTML = res.resultdata.uri
@@ -87,6 +93,9 @@ function updatedatabase() {
                 setTimeout(function(){
                     document.getElementById("db-down-errmsg").innerHTML = ""
                 }, 1500);
+                document.getElementById("main-right-box-nodata").style.display = "flex"
+                document.getElementById("main-right-box-domain").style.display = "none"
+                document.getElementById("main-right-box-dimension").style.display = "none"
             }
             else if(res.status == "success") {
                 const container = document.getElementById("db-downcontainer")

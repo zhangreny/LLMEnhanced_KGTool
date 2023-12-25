@@ -342,7 +342,7 @@ def api_getontologyofclass():
 @api_index.route("/api/getdomaingraph", methods=["POST"], strict_slashes=False)
 def api_getdomaingraph():
     # 限制概览页最多展示多少层节点
-    level = 2
+    level = 1
     # 限制最多返回多少个关系
     maxrelations = 300
     domainid = request.form["domainid"]
@@ -359,13 +359,30 @@ def api_getdomaingraph():
     res["nodes"] = []
     res["links"] = []
     try:
-        # 先保存领域名节点
         with driver.session() as session:
             domainnode = list(session.run("MATCH (n) where id(n)=" + domainid + " RETURN properties(n) AS Properties, labels(n) as Label, id(n) as Id"))[0]
         node = domainnode["Properties"]
         node["id"] = domainnode["Id"]
         node["label"] = domainnode["Label"][0]
         res['nodes'].append(node)
+        # 先获取入度
+        with driver.session() as session:
+            result = list(session.run("MATCH (m)-[r]->(n) where id(n)=" + domainid + " RETURN properties(m) AS Properties, labels(m) as Label, id(m) as Id, properties(r) AS relaProperties, type(r) as relatype"))
+        for i in range(len(result)):
+            record = result[i]
+            relation = record['relaProperties']
+            relation['relaname'] = record['relatype']
+            relation['source'] = record["Id"]
+            relation['target'] = domainid
+            if relation not in res["links"]:
+                res['links'].append(relation)
+            node = record["Properties"]
+            node["id"] = record["Id"]
+            node["label"] = record["Label"][0]
+            if node not in res["nodes"]:
+                res['nodes'].append(node)
+            if len(res["links"]) >= maxrelations:
+                return json.dumps({"status": "success", "resultdata": res})
         queue = [domainnode["Id"]]
         with driver.session() as session:
             for _ in range(level):
@@ -395,3 +412,63 @@ def api_getdomaingraph():
         print("[An Error Occurred]: " + str(e))
         print("===========================")
         return json.dumps({"status": "fail", "resultdata": "获取维度分类失败"})
+    
+@api_index.route("/api/uploadclassestodimension", methods=["POST"], strict_slashes=False)
+def api_uploadclassestodimension():
+    try:
+        dimensionname = request.form["dimensionname"]
+        domainid = request.form["domainid"]
+        clickedid = request.form["clickedid"]
+        inputfile = request.files["file"]
+        driver = current_app.config["Neo4j_Driver"]
+        if not inputfile:
+            return json.dumps({"status": "fail", "resultdata": "请上传非空分类文件"})
+        if inputfile.filename.split(".")[-1] == "json":
+            inputdict = json.loads(inputfile.read().decode("utf-8"))
+            category_names = set()
+            duplicate = []
+            for item in inputdict:
+                if item["分类名称"] in category_names:
+                    duplicate.append(item['分类名称'])
+                else:
+                    category_names.add(item["分类名称"])
+            if len(duplicate) > 0:
+                return json.dumps({"status": "fail", "resultdata": "存在重复分类名称: "+str(duplicate)})
+            ids = {}
+            with driver.session() as session:
+                tx = session.begin_transaction()
+                try:
+                    domainname = list(tx.run("MATCH (n) where id(n)=" + domainid + " RETURN n.name as Name"))[0]["Name"]
+                    for item in inputdict:
+                        if not ("所属父分类" in item and "分类名称" in item and "分类描述" in item):
+                            tx.commit()
+                            return json.dumps({"status": "fail", "resultdata": "不满足字段要求: 所属父分类，分类名称，分类描述"})
+                        fathername = item["所属父分类"]
+                        # 创建节点
+                        props = item
+                        del props["所属父分类"]
+                        props["domain"] = domainname
+                        props["dimension"] = dimensionname
+                        resultid = list(tx.run("Create (x:维度分类{name:'"+props["分类名称"]+"'}) set x+=$props RETURN id(x) as id", props=props))[0]["id"]
+                        ids[props["分类名称"]] = resultid
+                        # 创建关系
+                        if fathername == "":
+                            fatherid = clickedid
+                        else:
+                            fatherid = ids[fathername]
+                        tx.run("MATCH (m) where id(m)=" + str(fatherid) + " MATCH (n) where id(n)=" + str(resultid) + " Create (m)-[r:维度下分类]->(n) return id(r) as relaid")
+                    tx.commit()
+                    return json.dumps({"status": "success"})
+                except Exception as e:
+                    tx.rollback()
+                    print("#=========================#")
+                    print("[An Error Occurred]: " + str(e))
+                    print("===========================")
+                    return json.dumps({"status": "fail", "resultdata": str(e)})
+        else:
+            return
+    except Exception as e:
+        print("#=========================#")
+        print("[An Error Occurred]: " + str(e))
+        print("===========================")
+        return json.dumps({"status": "fail", "resultdata": str(e)})

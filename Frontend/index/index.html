@@ -114,13 +114,13 @@
 
     </div>
     <!-- 右侧的内容-维度 -->
-    <div id="main-right-box-nodata" class="flex-column width-75per height-100per bg-grey-to-white-top" style="width: calc(80% - 2px);display: none;">
+    <div id="main-right-box-nodata" class="flex-column width-75per height-100per bg-grey-to-white-top" style="width: calc(80% - 2px);">
         <div class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;">
             暂无任何领域
         </div>
     </div>
     <!-- 右侧的内容-领域 -->
-    <div id="main-right-box-domain" class="flex-column width-75per height-100per bg-white" style="width: calc(80% - 2px);">
+    <div id="main-right-box-domain" class="flex-column width-75per height-100per bg-white" style="width: calc(80% - 2px);display: none;">
         <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:49px">
             <span id="detail-domain-name" class="fontweight-600 marginleft-15">领域</span>
         </div>
@@ -152,9 +152,9 @@
                             <img src="/static/global/images/dimension-blue.png" class="img-16 marginleft-10">
                             <span style="line-height: 20px;" class="marginleft-10">创建维度</span>
                         </div>
-                        <div class="cursor-pointer width-100per borderradius-6 hover-bg-lightblue flex-row align-center hover-fontweight-600 hover-color-blue" style="height: 30px;margin-bottom: 3px;">
+                        <div onclick="domain_clickcategoryofdimension()" class="cursor-pointer width-100per borderradius-6 hover-bg-lightblue flex-row align-center hover-fontweight-600 hover-color-blue" style="height: 30px;margin-bottom: 3px;">
                             <img src="/static/global/images/categories.png" class="img-16 marginleft-10">
-                            <span style="line-height: 20px;" class="marginleft-10">维度下创建知识分类</span>
+                            <span style="line-height: 20px;" class="marginleft-10">维度下添加知识分类</span>
                         </div>
                         <div class="cursor-pointer width-100per borderradius-6 hover-bg-lightblue flex-row align-center hover-fontweight-600 hover-color-blue" style="height: 30px;margin-bottom: 3px;">
                             <img src="/static/global/images/ontologies.png" class="img-18 marginleft-10">

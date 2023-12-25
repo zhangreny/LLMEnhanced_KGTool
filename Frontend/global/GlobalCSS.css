@@ -426,8 +426,14 @@ input[readonly]:focus {
 .color-white {
     color: #fff;
 }
+.color-darkgrey {
+    color: #6a6a6a;
+}
 .color-grey {
     color: #8c8c8c;
+}
+.color-black {
+    color: #000;
 }
 .color-red {
     color: #d81e06;
