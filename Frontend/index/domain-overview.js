@@ -717,11 +717,168 @@ function popup_submit_addclassofdimension() {
         processData: false,
         contentType: false,
         success: function (res) {
+            document.getElementById("popup-domain-addcategory-loading").classList.add("hidden")
             if(res.status == "success"){
                 clickclosepopup()
                 closeadd()
                 GetDomainGraph()
+                GetDomainTree()
                 Showmsg("success", "添加分类文件成功！")
+            }
+            else {
+                document.getElementById("popup-domain-addcategory-errmsg").innerHTML = res.resultdata
+                setTimeout(function(){
+                    document.getElementById("popup-domain-addcategory-errmsg").innerHTML = ""
+                }, 1500);
+            }
+        }
+    })
+}
+
+function domain_clickaddontologyofcategory() {
+    const domainsanddimensions = JSON.parse(sessionStorage.getItem("domainsanddimensions"))
+    var dimensions = domainsanddimensions.dimensions.filter(function(item) {
+        return item.domain == document.getElementById("detail-domain-name").innerHTML
+    })
+    if (dimensions.length == 0) {
+        Showmsg("error", "该领域下没有维度")
+        return
+    }
+    const container = $("div#popup").empty()
+    document.getElementById("popup").style.display = "flex"
+    const adddomain = `
+    <div id="popupcontainer-addcategory" class="borderradius-6 padding-25 bg-white flex-column" style="width: 700px;padding-left:30px;padding-bottom:10px">
+        <!-- 标题和关闭按钮 -->
+        <div class="width-100per flex-row align-center justify-between marginbottom-10">
+            <span class="fontsize-20 fontweight-600">维度下添加知识分类</span>
+            <div onclick="clickclosepopup()" class="cursor-pointer borderradius-6 padding-5 hover-bg-lightgrey flex-row align-center marginright-5"><img src="/static/global/images/close.png" class="img-22"></div>
+        </div>
+        <!-- 标题 -->
+        <div class="paddingtop-10 paddingbottom-10 flex-row align-center">
+            <div class="flex-column" style="width: calc(50% - 10px)">
+                <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
+                    所属领域
+                </div>
+                <!-- 内容-输入框 -->
+                <input id="popup-domain-addcategory-domainname" class="margintop-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 25px);">
+            </div>
+            <div class="flex-column marginleft-20" style="width: calc(50% - 10px)">
+                <!-- 标题 -->
+                <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
+                    选择维度名
+                </div>
+                <!-- 内容-输入框 -->
+                <div class="width-100per" style="position: relative">
+                    <input onclick="addcategory_showselect()" id="popup-domain-addcategory-dimensionname" class="margintop-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 25px);" placeholder="选择维度">     
+                    <div id="popup-domain-addcategory-dimensionselects" class="flex-column overflowy-auto border-lightgrey bg-white borderradius-6 padding-5" style="position: absolute; left: 0px; top: 43px; max-height: 160px; width: calc(100% - 4px);display: none">
+                    </div>
+                </div>   
+            </div>
+        </div>
+        <!-- 分割 -->
+        <div class="width-100per" style="height:10px;"></div>
+        <!-- 标题 -->
+        <div class="paddingtop-5 paddingbottom-10 flex-row align-center">
+            <div class="flex-column" style="width: calc(50% - 10px)">
+                <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
+                    选择添加本体的知识分类
+                </div>
+                <!-- 内容-输入框 -->
+                <div id="popup-domain-adddimension-dimensiontree" class="margintop-5 padding-10 borderradius-6 border-lightgrey overflow-auto" style="width: calc(100% - 5px);height:250px">
+                    <div id="dimensiontree-choose" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;">
+                        请选择维度
+                    </div>
+                    <div id="dimensiontree-loading" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;display:none">
+                        <img src="/static/global/images/loading.gif" class="img-18">
+                        <span class="fontsize-16 marginleft-10 fontweight-600" style="color: #1c86ee;">获取数据中</span>
+                        </div>
+                    <div id="dimensiontree-error" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;display:none">
+                        <span class="fontsize-16 marginleft-10 fontweight-600" style="color: #d81e06;">[ERROR] 获取数据失败</span>
+                    </div>
+                    <div id="dimensiontree-content" class="width-100per height-100per flex-column fontsize-14" style="color: #4b4b4b;display:none">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="flex-column marginleft-20" style="width: calc(50% - 10px);">
+                <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
+                    上传本体文件
+                </div>
+                <!-- 内容-输入框 -->
+                <div class="margintop-5 borderradius-6" style="width: calc(100% - 5px);height:250px">
+                    <div class="color-grey fontsize-12">我们只接受以.json文件格式导入分类本体，因为本体文件中必须包含各种字段。</div>
+                    <div class="color-grey fontsize-12 margintop-5">必须包含<本体名称>字段和<本体类型>字段，其中<本体类型>字段只可选填"分类"或者"属性"，其次是<子分类>字段，其值为一个列表，包含其下的本体分类或本体属性。</div>
+                    <div class="color-grey fontsize-12 margintop-5">若<本体类型>字段值为"属性"，则还需要包含<国标要求>字段，用于标识这个属性值的国标要求值。</div>
+                    <div class="color-blue hover-text-underline cursor-pointer color-grey fontsize-12" style="margin-top:3px">JSON文件模板下载</div>
+
+                    <input type="file" id="popup-domain-addcategory-addfile" class="margintop-15 marginbottom-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 22px);" accept=".json, .txt">   
+                    
+                    <div class="margintop-20">知识分类将上传到<span id="addclass_chosenclassname" class="fontweight-600 marginleft-10 marginright-10">-</span>下</div>
+                </div>
+            </div>
+        </div>
+        <!-- 错误信息和提交按钮 -->
+        <div class="width-100per margintop-15 flex-row align-center justify-between" style="height:39px;">
+            <div id="popup-domain-addcategory-errmsg" class="color-red fontsize-14" style="margin-bottom:6px"></div>
+            <div class="flex-row align-center">
+                <img id="popup-domain-addcategory-loading" src="/static/global/images/loading.gif" class="hidden img-18 marginright-10">
+                <button onclick="popup_submit_addontologyofclass()" type="button" class="layui-btn layui-btn-normal" style="width:70px;border-radius:6px;font-weight:600;height:28px;line-height:28px;">
+                    保存
+                </button>
+            </div>
+        </div> 
+    </div>
+    `
+    $(adddomain).appendTo(container)
+    document.getElementById("popup-domain-addcategory-domainname").value = document.getElementById("detail-domain-name").innerHTML
+    document.getElementById("popup-domain-addcategory-domainname").readOnly = true
+}
+
+
+function popup_submit_addontologyofclass() {
+    const domainid = currentdomainid
+    const dimensionname = document.getElementById("popup-domain-addcategory-dimensionname").value
+    const clickedid = addclasses_classid
+    const file = document.getElementById("popup-domain-addcategory-addfile").files[0]
+    if (dimensionname == "") {
+        document.getElementById("popup-domain-addcategory-errmsg").innerHTML = "请选择维度名"
+        setTimeout(function(){
+            document.getElementById("popup-domain-addcategory-errmsg").innerHTML = ""
+        }, 1500);
+        return
+    }
+    if (file == null || file.size == 0) {
+        document.getElementById("popup-domain-addcategory-errmsg").innerHTML = "请上传本体文件"
+        setTimeout(function(){
+            document.getElementById("popup-domain-addcategory-errmsg").innerHTML = ""
+        }, 1500);
+        return
+    }
+    // 显示loading框
+    document.getElementById("popup-domain-addcategory-loading").classList.remove("hidden")
+
+    var formFile = new FormData()
+    formFile.append("dimensionname", dimensionname)
+    formFile.append("domainid", currentdomainid)
+    formFile.append("clickedid", clickedid)
+    formFile.append("file", file)
+    var data = formFile;
+    $.ajax({
+        url: "/api/uploadontologytoclass",
+        data: data,
+        type: "POST",
+        dataType: "json",
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+            document.getElementById("popup-domain-addcategory-loading").classList.add("hidden")
+            if(res.status == "success"){
+                clickclosepopup()
+                closeadd()
+                GetDomainGraph()
+                GetDomainTree()
+                Showmsg("success", "添加本体文件成功！")
             }
             else {
                 document.getElementById("popup-domain-addcategory-errmsg").innerHTML = res.resultdata

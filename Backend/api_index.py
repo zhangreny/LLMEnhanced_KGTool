@@ -360,13 +360,6 @@ def api_getdomaingraph():
     res["links"] = []
     try:
         with driver.session() as session:
-            domainnode = list(session.run("MATCH (n) where id(n)=" + domainid + " RETURN properties(n) AS Properties, labels(n) as Label, id(n) as Id"))[0]
-        node = domainnode["Properties"]
-        node["id"] = domainnode["Id"]
-        node["label"] = domainnode["Label"][0]
-        res['nodes'].append(node)
-        # 先获取入度
-        with driver.session() as session:
             result = list(session.run("MATCH (m)-[r]->(n) where id(n)=" + domainid + " RETURN properties(m) AS Properties, labels(m) as Label, id(m) as Id, properties(r) AS relaProperties, type(r) as relatype"))
         for i in range(len(result)):
             record = result[i]
@@ -383,6 +376,14 @@ def api_getdomaingraph():
                 res['nodes'].append(node)
             if len(res["links"]) >= maxrelations:
                 return json.dumps({"status": "success", "resultdata": res})
+        with driver.session() as session:
+            domainnode = list(session.run("MATCH (n) where id(n)=" + domainid + " RETURN properties(n) AS Properties, labels(n) as Label, id(n) as Id"))[0]
+        node = domainnode["Properties"]
+        node["id"] = domainnode["Id"]
+        node["label"] = domainnode["Label"][0]
+        res['nodes'].append(node)
+        # 先获取入度
+        
         queue = [domainnode["Id"]]
         with driver.session() as session:
             for _ in range(level):
@@ -441,7 +442,7 @@ def api_uploadclassestodimension():
                     domainname = list(tx.run("MATCH (n) where id(n)=" + domainid + " RETURN n.name as Name"))[0]["Name"]
                     for item in inputdict:
                         if not ("所属父分类" in item and "分类名称" in item and "分类描述" in item):
-                            tx.commit()
+                            tx.rollback()
                             return json.dumps({"status": "fail", "resultdata": "不满足字段要求: 所属父分类，分类名称，分类描述"})
                         fathername = item["所属父分类"]
                         # 创建节点
@@ -526,3 +527,60 @@ def api_getalltreesofdomain():
         print("[An Error Occurred]: " + str(e))
         print("===========================")
         return json.dumps({"status": "fail", "resultdata": "获取领域树状结构失败"})
+    
+@api_index.route("/api/uploadontologytoclass", methods=["POST"], strict_slashes=False)
+def api_uploadontologytoclass():
+    try:
+        dimensionname = request.form["dimensionname"]
+        domainid = request.form["domainid"]
+        clickedid = request.form["clickedid"]
+        inputfile = request.files["file"]
+        driver = current_app.config["Neo4j_Driver"]
+        if not inputfile:
+            return json.dumps({"status": "fail", "resultdata": "请上传非空本体文件"})
+        if inputfile.filename.split(".")[-1] == "json":
+            queue = json.loads(inputfile.read().decode("utf-8"))
+            for q in queue:
+                q["level"] = 0
+            levelsandid = {}
+            with driver.session() as session:
+                tx = session.begin_transaction()
+                try:
+                    while len(queue) > 0:
+                        currentpop = queue.pop(0)
+                        props = deepcopy(currentpop)
+                        if "子分类" in props:
+                            del props["子分类"]
+                        del props["level"]
+                        if "分类名" in props:
+                            name = props["分类名"]
+                        elif "属性名" in props:
+                            name = props["属性名"]
+                        # 创建节点
+                        resultid = list(tx.run("Create (x:分类本体{name:'"+name+"'}) set x+=$props RETURN id(x) as id", props=props))[0]["id"]
+                        # 创建关系
+                        if currentpop["level"] == 0:
+                            fatherid = clickedid
+                        else:
+                            fatherid = levelsandid[currentpop["level"] - 1]
+                        tx.run("MATCH (m) where id(m)=" + str(fatherid) + " MATCH (n) where id(n)=" + str(resultid) + " Create (m)-[r:分类本体]->(n) return id(r) as relaid")
+                        levelsandid[currentpop["level"]] = resultid
+                        if "子分类" in currentpop:
+                            for i in range(len(currentpop["子分类"])):
+                                currentpop["子分类"][len(currentpop["子分类"])-1-i]["level"] = currentpop["level"] + 1
+                                queue.insert(0, currentpop["子分类"][len(currentpop["子分类"])-1-i])
+                    tx.commit()
+                    return json.dumps({"status": "success"})
+                except Exception as e:
+                    tx.rollback()
+                    print("#=========================#")
+                    print("[An Error Occurred]: " + str(e))
+                    print("===========================")
+                    return json.dumps({"status": "fail", "resultdata": str(e)})
+        else:
+            return
+    except Exception as e:
+        print("#=========================#")
+        print("[An Error Occurred]: " + str(e))
+        print("===========================")
+        return json.dumps({"status": "fail", "resultdata": str(e)})
