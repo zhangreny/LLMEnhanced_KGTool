@@ -49,8 +49,8 @@ def api_updatedatabase():
         print("===========================")
         return json.dumps({"status": "fail", "resultdata": dbinfo})
 
-@api_index.route("/api/getdomainsanddimensions")
-def api_getdomainsanddimensions():
+@api_index.route("/api/getdomains")
+def api_getdomains():
     try:
         driver = current_app.config["Neo4j_Driver"]
         with driver.session() as session:
@@ -62,24 +62,18 @@ def api_getdomainsanddimensions():
         return json.dumps({"status": "dbfail"})
     try:
         domains = []
-        dimensions = []
         with driver.session() as session:
             results = list(session.run("MATCH (x:领域名) RETURN x.name as Name, id(x) as id"))
         for result in results:
             domainname = result["Name"]
             domainid = result["id"]
             domains.append({"name": domainname, "id" :domainid})
-            with driver.session() as session:
-                dimensionres = list(session.run("MATCH (x:维度名) where x.domain='" + domainname + "' "
-                                                "RETURN x.name as Name, id(x) as id"))
-            for dimension in dimensionres:
-                dimensions.append({"name": dimension["Name"], "domain":domainname, "id": dimension["id"]})
-        return json.dumps({"status": "success", "domains": domains, "dimensions": dimensions})
+        return json.dumps({"status": "success", "domains": domains})
     except Exception as e:
         print("#=========================#")
         print("[An Error Occurred]: " + str(e))
         print("===========================")
-        return json.dumps({"status": "fail", "resultdata": "获取领域名和维度名失败"})
+        return json.dumps({"status": "fail", "resultdata": "获取领域名失败"})
 
 @api_index.route("/api/createnewdomain", methods=["POST"], strict_slashes=False)
 def api_createnewdomain():

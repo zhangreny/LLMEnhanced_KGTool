@@ -47,15 +47,22 @@
 <div id="main-box-container" class="height-100per flex-row borderradius-6 bg-gradient-top-light" style="width: calc(100% - 72px)">
     <!-- 左侧的功能 -->
     <div id="main-left-box" class="width-20per height-100per">
-        <div class="width-100per borderbottom-lightgrey flex-row align-center justify-between" style="height:49px;position:relative;">
-            <div onclick="editdatabase()" class="marginleft-10 cursor-pointer borderradius-6 fontsize-14 padding-10-5 hover-bg-darkyellow fontweight-600 flex-row align-center">
+        <div class="width-100per borderbottom-lightgrey flex-column justify-center padding-10" style="height:83px;position:relative;">
+            <div onclick="editdatabase()" class="cursor-pointer borderradius-6 fontsize-14 padding-10-5 hover-bg-darkyellow fontweight-600 flex-row align-center" style="padding-left: 14px;">
                 <div id="db-icon-success" class="hidden marginright-5 borderradius-6 bg-green" style="width: 8px;height: 8px;"></div>
                 <div id="db-icon-fail" class="hidden marginright-5 borderradius-6 bg-red" style="width: 8px;height: 8px;"></div>
                 <div id="db-icon-nodb" class="marginright-5 borderradius-6 bg-grey" style="width: 8px;height: 8px;"></div>
-                <span id="db-uri" style="margin-top: 2px;">获取数据库中</span>
+                <span id="db-uri" style="margin-left:5px;line-height: 18px;">获取数据库中</span>
                 <img src="/static/global/images/down-thick.png" class="img-14 marginleft-5">
             </div>
-            <div id="db-downcontainer" class="hidden borderradius-6 bg-white border-grey" style="z-index:3;width:330px;height:205px;position:absolute;top:42px;left:10px">
+            <div onclick="clicktochoosedomain()" class="cursor-pointer borderradius-6 fontsize-14 padding-10-5 hover-bg-darkyellow flex-row align-center" style="margin-top:6px">
+                <img src="/static/global/images/domain.png" class="marginright-5 img-18">
+                <span id="db-domain" style="line-height: 18px;font-weight: 600;">获取数据库中</span>
+                <img src="/static/global/images/down-thick.png" class="img-14 marginleft-5">
+            </div>
+            <div id="domainselects" class="flex-column overflowy-auto border-grey bg-white borderradius-6 padding-5" style="position: absolute; left: 10px; top: 73px; max-height: 160px; z-index:2;width: 330px;display: none">
+            </div>
+            <div id="db-downcontainer" class="hidden borderradius-6 bg-white border-grey" style="z-index:3;width:330px;height:205px;position:absolute;top:40px;left:10px">
                 <div class="width-100per borderbottom-lightgrey flex-row align-center justify-between" style="height:34px;">
                     <span class="marginleft-10 fontsize-14">编辑鉴权信息</span>
                     <div onclick="closeeditdatabase()" class="cursor-pointer borderradius-6 padding-5 hover-bg-lightgrey flex-row align-center marginright-5"><img src="/static/global/images/close.png" class="img-16"></div>
@@ -83,7 +90,7 @@
                 </div> 
             </div>
         </div>
-        <div id="domain-dimension-container" class="width-100per overflowy-auto paddingtop-10" style="height:calc(100% - 50px);">
+        <div id="domain-dimension-container" class="width-100per overflowy-auto paddingtop-10" style="height:calc(100% - 84px);">
             <!--
             <div id="ly_1" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="">
                 <img src="/static/global/images/right.png" class="img-10 marginright-5 marginleft-5">
@@ -184,9 +191,6 @@
         </div>
         <div id="domain-page-1" class="width-100per overflowy-auto bg-grey-to-white-top" style="height: calc(100% - 83px); display: none;">
         </div>
-    </div>
-    <!-- 右侧的内容-维度 -->
-    <div id="main-right-box-dimension" class="flex-column width-75per height-100per bg-white" style="width: calc(80% - 2px);display: none;">
     </div>
 </div>
 </div>

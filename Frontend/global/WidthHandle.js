@@ -2,7 +2,6 @@
 const handle = document.getElementById('main-width-handler');
 const box1 = document.getElementById('main-left-box');
 const box2 = document.getElementById('main-right-box-domain');
-const box3 = document.getElementById('main-right-box-dimension');
 const boxcontainer = document.getElementById("main-box-container");
 
 let isResizing = false;
@@ -20,6 +19,5 @@ function handleMouseMove(event) {
         const handlePosition = event.clientX - containerRect.left;
         box1.style.width = `${handlePosition}px`;
         box2.style.width = `${containerRect.width - handlePosition}px`;
-        box3.style.width = `${containerRect.width - handlePosition}px`;
     }
 }

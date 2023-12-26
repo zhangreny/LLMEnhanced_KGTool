@@ -22,7 +22,6 @@ function CheckDatabaseConnection() {
                 document.getElementById("db-icon-success").classList.add("hidden")
                 document.getElementById("main-right-box-nodata").style.display = "flex"
                 document.getElementById("main-right-box-domain").style.display = "none"
-                document.getElementById("main-right-box-dimension").style.display = "none"
             }
             else if(res.status == "fail") {
                 document.getElementById("db-uri").innerHTML = res.resultdata.uri
@@ -34,7 +33,6 @@ function CheckDatabaseConnection() {
                 inputs[2].value = res.resultdata.password
                 document.getElementById("main-right-box-nodata").style.display = "flex"
                 document.getElementById("main-right-box-domain").style.display = "none"
-                document.getElementById("main-right-box-dimension").style.display = "none"
             }
             else if(res.status == "success") {
                 document.getElementById("db-uri").innerHTML = res.resultdata.uri
@@ -44,7 +42,7 @@ function CheckDatabaseConnection() {
                 inputs[0].value = res.resultdata.uri
                 inputs[1].value = res.resultdata.username
                 inputs[2].value = res.resultdata.password
-                getdomainsanddimensions()
+                getdomains()
             }
         }
     })
@@ -95,7 +93,6 @@ function updatedatabase() {
                 }, 1500);
                 document.getElementById("main-right-box-nodata").style.display = "flex"
                 document.getElementById("main-right-box-domain").style.display = "none"
-                document.getElementById("main-right-box-dimension").style.display = "none"
             }
             else if(res.status == "success") {
                 const container = document.getElementById("db-downcontainer")
@@ -108,71 +105,102 @@ function updatedatabase() {
                 inputs[1].value = res.resultdata.username
                 inputs[2].value = res.resultdata.password
                 closeeditdatabase()
-                getdomainsanddimensions()
+                getdomains()
             }
         }
     })
-}
-
-// 根据json文件渲染
-function renderdomainsanddimensions(res) {
-    const dimensionfinaladd_1 = '<div id="'
-    const dimensionfinaladd_2 = '" onclick="clickadddimension(`'
-    const dimensionfinaladd_3 = '`)" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;"><div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px;">+</div><span style="line-height: 20px;">创建维度</span></div>'
-    const domain_1 = '<div onclick="clickdomain(`'
-    const domain_2 = '`)" id="'
-    const domain_3 = '" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style=""><img onclick="ExpandandCollapse(`'
-    const domain_4 = '`)" src="/static/global/images/right.png" class="transform-90 img-10 marginright-5 marginleft-5"><img src="/static/global/images/domain.png" class="img-20 marginright-5"><span style="line-height: 22px;">'
-    const domain_5 = '</span></div>'
-    const dimension_1 = '<div onclick="clickdimension(`'
-    const dimension_2 = '`)" id="'
-    const dimension_3 = '" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;"><img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;"><span style="line-height: 20px;">'
-    const dimension_4 = '</span></div>'
-    const container = $("div#domain-dimension-container")
-    for (var i=0; i<res.domains.length; i++) {
-        var domaininfo = res.domains[i]
-        var domainid = "ly_" + domaininfo.id.toString()
-        $(domain_1 + domainid + domain_2 + domainid + domain_3 + domainid + domain_4 + domaininfo.name + domain_5).appendTo(container)
-        var dimensions = res.dimensions.filter(function(item) {
-            return item.domain == domaininfo.name
-        })
-        for (var j=0; j<dimensions.length; j++) {
-            var dimensionid = domainid + "_wd_" + dimensions[j].id.toString()
-            $(dimension_1 + dimensionid + dimension_2 + dimensionid + dimension_3 + dimensions[j].name + dimension_4).appendTo(container)
-        }
-        $(dimensionfinaladd_1 + domainid + "_wd_add" + dimensionfinaladd_2 + domainid + dimensionfinaladd_3).appendTo(container)
-    }
-    clickdomain("ly_" + res.domains[0].id.toString())
 }
 
 // 获取数据库下的所有领域名和维度名
-function getdomainsanddimensions() {
+function getdomains() {
     $.ajax({
-        url: "/api/getdomainsanddimensions",
+        url: "/api/getdomains",
         method: "GET",
         success: function(res2) {
-            closeadd()
+            // 初始化全局变量
             currentdomainid = -1
             currentdimensionid = -1
             const res = JSON.parse(res2)
-            const container = $("div#domain-dimension-container").empty()
             if (res.domains.length > 0) {
+                const container = $("div#domainselects").empty()
                 document.getElementById("main-right-box-nodata").style.display = "none"
                 document.getElementById("main-right-box-domain").style.display = "flex"
-                document.getElementById("main-right-box-dimension").style.display = "none"
-                sessionStorage.setItem("domainsanddimensions", JSON.stringify(res))
-                renderdomainsanddimensions(res)
+                sessionStorage.setItem("domains", JSON.stringify(res))
+                for (var i = 0; i < res.domains.length; i++) {
+                    var domain = res.domains[i]
+                    var domainname = domain.name
+                    var domainid = domain.id
+                    var domainselect = `
+                        <div id="domainselects_`+domainid.toString()+`" onclick="domainselects_clickdomain('`+domainname+`',`+domainid.toString()+`)" class="cursor-pointer borderradius-6 width-100per hover-bg-lightgrey padding-10-5" style="padding-left:5px"><img src="/static/global/images/domain.png" class="img-18">
+                            `+domainname+`
+                        </div>
+                    `
+                    $(domainselect).appendTo(container)
+                }
+                domainselects_clickdomain(res.domains[0].name, res.domains[0].id)
             }
             else {
-                document.getElementById("main-right-box-nodata").style.display = "flex"
                 document.getElementById("main-right-box-domain").style.display = "none"
-                document.getElementById("main-right-box-dimension").style.display = "none"
+                document.getElementById("main-right-box-nodata").style.display = "flex"
             }
-            const domainfinaladd = '<div id="ly-add" onclick="clickadddomain()" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style=""><div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px;">+</div><span style="line-height: 22px;">创建新领域</span></div>'
-            $(domainfinaladd).appendTo(container)
         }
     })
 }
+
+function clicktochoosedomain() {
+    document.getElementById("domainselects").style.display = "flex"
+}
+
+function domainselects_clickdomain(domainname, domainid) {
+    // 关闭弹框，填写字段
+    document.getElementById("db-domain").innerHTML = domainname
+    document.getElementById("domainselects").style.display = "none"
+    // 更换样式
+    if (currentdomainid!= -1) {
+        document.getElementById("domainselects_"+currentdomainid.toString()).classList.remove("chosen-lightblue")
+        document.getElementById("domainselects_"+currentdomainid.toString()).classList.add("hover-bg-lightgrey")
+        document.getElementById("domainselects_"+currentdomainid.toString()).getElementsByTagName("img")[0].src = "/static/global/images/domain.png"
+    }
+    document.getElementById("domainselects_"+domainid.toString()).classList.remove("hover-bg-lightgrey")
+    document.getElementById("domainselects_"+domainid.toString()).classList.add("chosen-lightblue")
+    document.getElementById("domainselects_"+domainid.toString()).getElementsByTagName("img")[0].src = "/static/global/images/domain-blue.png"
+    // 更新全局变量
+    currentdomainid = domainid
+    // 获取数据
+    clickdomain(domainname, domainid)
+}
+
+function clickdomain(domainname, domainid) {
+    // 隐藏维度页，显示领域页
+    document.getElementById("main-right-box-domain").style.display = "flex"
+    // 替换题头领域名
+    document.getElementById("detail-domain-name").innerHTML = domainname
+    // 点击概览
+    domainclicktab(0)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // 维度 样式的还原 
 function returndimensiontoold(oldcontainer) {
@@ -332,39 +360,7 @@ function submitnewdimension(domainid) {
 }
 
 // 点击领域
-function clickdomain(domainid) {
-    // 记录领域id
-    if (currentdomainid != parseInt(domainid.slice(3))) {
-        currentdomainid = parseInt(domainid.slice(3))
-        currentdimensionid = -1
-    }
-    // 还原之前的样式
-    const oldcontainers = document.getElementById("domain-dimension-container").querySelectorAll(".bg-darkgreen")
-    if (oldcontainers.length > 0) {
-        const oldcontainer = oldcontainers[0]
-        if (oldcontainer.getElementsByTagName("img").length == 2) {
-            returndomaintoold(oldcontainer)
-        }
-        else if (oldcontainer.getElementsByTagName("img").length == 1) {
-            returndimensiontoold(oldcontainer)
-        }
-    }
-    // 切换点击的样式，绿色背景
-    const container = document.getElementById(domainid)
-    container.classList.remove("hover-bg-darkyellow")
-    container.classList.add("bg-darkgreen")
-    container.classList.add("color-white")
-    container.getElementsByTagName("img")[0].setAttribute('src', '/static/global/images/right-white.png');
-    container.getElementsByTagName("img")[1].setAttribute('src', '/static/global/images/domain-white.png');
-    // 隐藏维度页，显示领域页
-    document.getElementById("main-right-box-dimension").style.display = "none"
-    document.getElementById("main-right-box-domain").style.display = "flex"
-    // 替换题头领域名
-    const spanvalue = container.getElementsByTagName("span")[0].innerHTML
-    document.getElementById("detail-domain-name").innerHTML = spanvalue
-    // 点击概览
-    domainclicktab(0)
-}
+
 
 // 点击维度
 function clickdimension(dimensionid) {
@@ -390,7 +386,6 @@ function clickdimension(dimensionid) {
     container.getElementsByTagName("img")[0].setAttribute('src', '/static/global/images/dimension-white.png');
     // 隐藏维度页，显示领域页
     document.getElementById("main-right-box-domain").style.display = "none"
-    document.getElementById("main-right-box-dimension").style.display = "flex"
     // 替换题头领域名
     const spanvalue = container.getElementsByTagName("span")[0].innerHTML
     document.getElementById("detail-dimension-name").innerHTML = spanvalue
