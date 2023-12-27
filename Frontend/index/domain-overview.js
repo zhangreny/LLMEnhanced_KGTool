@@ -454,6 +454,7 @@ function domain_submitnewdomain() {
         document.getElementById("popup-domain-adddimension-errmsg").innerHTML = "请输入领域名"
         return
     } 
+    document.getElementById("popup-domain-adddimension-loading").classList.remove("hidden")
     var formFile = new FormData()
     formFile.append("newdomain", domainname)
     formFile.append("description", description)
@@ -469,6 +470,7 @@ function domain_submitnewdomain() {
         success: function (res) {
             if(res.status == "fail") {
                 document.getElementById("popup-domain-adddimension-errmsg").innerHTML = res.resultdata
+                document.getElementById("popup-domain-adddimension-loading").classList.add("hidden")
             }
             else if(res.status == "success") {
                 clickclosepopup()
@@ -539,6 +541,8 @@ function domain_submitnewdimension() {
         document.getElementById("popup-domain-adddimension-errmsg").innerHTML = "请输入维度名"
         return
     } 
+    // 显示loading框
+    document.getElementById("popup-domain-adddimension-loading").classList.remove("hidden")
     var formFile = new FormData()
     formFile.append("id", domainid)
     formFile.append("newdimension", dimensionname)
@@ -555,6 +559,7 @@ function domain_submitnewdimension() {
         success: function (res) {
             if(res.status == "fail") {
                 document.getElementById("popup-domain-adddimension-errmsg").innerHTML = res.resultdata
+                document.getElementById("popup-domain-adddimension-loading").classList.add("hidden")
             }
             else if(res.status == "success") {
                 clickclosepopup()
@@ -642,10 +647,10 @@ function domain_clickcategoryofdimension() {
                 <!-- 内容-输入框 -->
                 <div class="margintop-5 borderradius-6" style="width: calc(100% - 5px);height:250px">
                     <div class="color-grey fontsize-12">1 推荐以.json文件导入知识分类。每个分类必须包含四项字段：id、父分类id、元数据、其他属性。前两者用于确定分类间父子关系，根元素父分类id固定为-1，上传后会重新分配id；元数据必须包含三项字段：分类名称，分类描述和分类来源；其他键值对放在其他属性中。</div>
-                    <div class="color-blue hover-text-underline cursor-pointer fontsize-12" style="margin-top:3px">JSON文件模板下载</div>
+                    <div onclick="DownloadJSONtemplate_addcategory()" class="color-blue hover-text-underline cursor-pointer fontsize-12" style="margin-top:3px">JSON文件模板下载</div>
 
                     <div class="color-grey fontsize-12 margintop-10">2 也可上传只包含各分类名的.txt文件，行与行之间的分类名通过Tab符号数量，表示父子关系。</div>
-                    <div class="color-blue hover-text-underline cursor-pointer fontsize-12" style="margin-top:3px">TXT文件模板下载</div>
+                    <div onclick="DownloadTXTtemplate_addcategory()" class="color-blue hover-text-underline cursor-pointer fontsize-12" style="margin-top:3px">TXT文件模板下载</div>
 
                     <input type="file" id="popup-domain-addcategory-addfile" class="margintop-15 marginbottom-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 22px);" accept=".json, .txt">   
                     
@@ -818,6 +823,15 @@ function popup_submit_addclassofdimension() {
         }
     })
 }
+
+function DownloadJSONtemplate_addcategory() {
+    window.open('/template_download/add_category_to_dimension/json', '_blank');
+}
+
+function DownloadTXTtemplate_addcategory() {
+    window.open('/template_download/add_category_to_dimension/txt', '_blank');
+}
+
 
 function domain_clickaddontologyofcategory() {
     const domainsanddimensions = JSON.parse(sessionStorage.getItem("domainsanddimensions"))

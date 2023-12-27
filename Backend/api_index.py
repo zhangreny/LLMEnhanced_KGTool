@@ -3,6 +3,7 @@ import json
 
 from flask import Blueprint
 from flask import request
+from flask import send_file
 from flask import current_app
 from neo4j import GraphDatabase
 from copy import deepcopy
@@ -296,8 +297,6 @@ def api_getdomaingraph():
         node["id"] = domainnode["Id"]
         node["label"] = domainnode["Label"][0]
         res['nodes'].append(node)
-        # 先获取入度
-        
         queue = [domainnode["Id"]]
         with driver.session() as session:
             for _ in range(level):
@@ -328,6 +327,16 @@ def api_getdomaingraph():
         print("===========================")
         return json.dumps({"status": "fail", "resultdata": "获取维度分类失败"})
     
+def parse_tabbed_string(input_string):
+    tab_count = 0
+    rest_of_string = input_string
+    for char in input_string:
+        if char == '\t':
+            tab_count += 1
+        else:
+            break
+    rest_of_string = rest_of_string.lstrip('\t')
+    return tab_count, rest_of_string
 @api_index.route("/api/uploadclassestodimension", methods=["POST"], strict_slashes=False)
 def api_uploadclassestodimension():
     try:
@@ -380,8 +389,42 @@ def api_uploadclassestodimension():
                     print("[An Error Occurred]: " + str(e))
                     print("===========================")
                     return json.dumps({"status": "fail", "resultdata": str(e)})
-        else:
-            return
+        elif inputfile.filename.split(".")[-1] == "txt":
+            tabnum_id_hashtable = {}
+            inputstr = inputfile.read().decode("utf-8")
+            lines = inputstr.split("\n")
+            with driver.session() as session:
+                tx = session.begin_transaction()
+                try:
+                    domainname = list(tx.run("MATCH (n) where id(n)=" + domainid + " RETURN n.name as Name"))[0]["Name"]
+                    for l in lines:
+                        line = l.rstrip("\r")
+                        if line != "":
+                            tabnum, phrase = parse_tabbed_string(line)
+                        # 创建节点
+                        props = {}
+                        tmp = {"分类名称": phrase,"分类描述":"", "分类来源":""}
+                        tmp2 = {}
+                        props["元数据"] = str(tmp)
+                        props["其他属性"] = str(tmp2)
+                        props["domain"] = domainname
+                        props["dimension"] = dimensionname
+                        resultid = list(tx.run("Create (x:维度分类{name:'"+phrase+"'}) set x+=$props RETURN id(x) as id", props=props))[0]["id"]
+                        tabnum_id_hashtable[tabnum] = resultid
+                        # 找父节点
+                        if tabnum == 0:
+                            fatherid = clickedid
+                        else:
+                            fatherid = tabnum_id_hashtable[tabnum-1]
+                        tx.run("MATCH (m) where id(m)=" + str(fatherid) + " MATCH (n) where id(n)=" + str(resultid) + " Create (m)-[r:子分类]->(n) return id(r) as relaid")
+                    tx.commit()
+                    return json.dumps({"status": "success"})
+                except Exception as e:
+                    tx.rollback()
+                    print("#=========================#")
+                    print("[An Error Occurred]: " + str(e))
+                    print("===========================")
+                    return json.dumps({"status": "fail", "resultdata": str(e)})
     except Exception as e:
         print("#=========================#")
         print("[An Error Occurred]: " + str(e))
@@ -498,3 +541,17 @@ def api_uploadontologytoclass():
         print("[An Error Occurred]: " + str(e))
         print("===========================")
         return json.dumps({"status": "fail", "resultdata": str(e)})
+    
+@api_index.route('/template_download/add_category_to_dimension/json')
+def template_download_add_category_to_dimension_json():
+    # 文件路径
+    file_path = '../filesfordownload/JSON模板-维度下添加知识分类.zip'
+    # 发送文件
+    return send_file(file_path, as_attachment=True)
+
+@api_index.route('/template_download/add_category_to_dimension/txt')
+def template_download_add_category_to_dimension_txt():
+    # 文件路径
+    file_path = '../filesfordownload/TXT模板-维度下添加知识分类.txt'
+    # 发送文件
+    return send_file(file_path, as_attachment=True)
