@@ -46,7 +46,7 @@ input[readonly]:focus {
 ::-webkit-scrollbar-thumb {
     width: 8px;
     height: 8px;
-    background-color: rgba(80, 80, 80, 0.7);
+    background-color: rgba(178, 176, 176, 0.7);
     border-radius: 4px;
 }
 
@@ -75,6 +75,10 @@ input[readonly]:focus {
 }
 .cursor-pointer {
     cursor: pointer;
+}
+.chosen-darkgreen {
+    background-color: rgb(32, 81, 58);
+    color: #fff;
 }
 
 
@@ -234,6 +238,9 @@ input[readonly]:focus {
 .bg-blue {
     background-color: rgb(30, 159, 255);
 }
+.bg-darkgreen {
+    background-color: rgb(32, 81, 58)
+}
 .hover-bg-blue-2:hover {
     background-color: rgb(75, 176, 254);
 }
@@ -320,6 +327,9 @@ input[readonly]:focus {
 }
 .padding-10-5 {
     padding: 5px 10px 5px 10px;
+}
+.padding-10-7 {
+    padding: 7px 10px 7px 10px;
 }
 .padding-25 {
     padding: 25px;

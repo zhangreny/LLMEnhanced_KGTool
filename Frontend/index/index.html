@@ -46,23 +46,23 @@
 </div>
 <div id="main-box-container" class="height-100per flex-row borderradius-6 bg-gradient-top-light" style="width: calc(100% - 72px)">
     <!-- 左侧的功能 -->
-    <div id="main-left-box" class="width-20per height-100per">
+    <div id="main-left-box" class="width-25per height-100per">
         <div class="width-100per borderbottom-lightgrey flex-column justify-center padding-10" style="height:83px;position:relative;">
-            <div onclick="editdatabase()" class="cursor-pointer borderradius-6 fontsize-14 padding-10-5 hover-bg-darkyellow fontweight-600 flex-row align-center" style="padding-left: 14px;">
+            <div onclick="editdatabase()" class="cursor-pointer borderradius-6 fontsize-14 padding-10-7 hover-bg-darkyellow fontweight-600 flex-row align-center" style="padding-left: 14px;">
                 <div id="db-icon-success" class="hidden marginright-5 borderradius-6 bg-green" style="width: 8px;height: 8px;"></div>
                 <div id="db-icon-fail" class="hidden marginright-5 borderradius-6 bg-red" style="width: 8px;height: 8px;"></div>
                 <div id="db-icon-nodb" class="marginright-5 borderradius-6 bg-grey" style="width: 8px;height: 8px;"></div>
                 <span id="db-uri" style="margin-left:5px;line-height: 18px;">获取数据库中</span>
                 <img src="/static/global/images/down-thick.png" class="img-14 marginleft-5">
             </div>
-            <div onclick="clicktochoosedomain()" class="cursor-pointer borderradius-6 fontsize-14 padding-10-5 hover-bg-darkyellow flex-row align-center" style="margin-top:6px">
+            <div onclick="clicktochoosedomain()" class="cursor-pointer borderradius-6 fontsize-14 padding-10-7 hover-bg-darkyellow flex-row align-center">
                 <img src="/static/global/images/domain.png" class="marginright-5 img-18">
                 <span id="db-domain" style="line-height: 18px;font-weight: 600;">获取数据库中</span>
                 <img src="/static/global/images/down-thick.png" class="img-14 marginleft-5">
             </div>
-            <div id="domainselects" class="flex-column overflowy-auto border-grey bg-white borderradius-6 padding-5" style="position: absolute; left: 10px; top: 73px; max-height: 160px; z-index:2;width: 330px;display: none">
+            <div id="domainselects" class="flex-column overflowy-auto border-grey bg-white borderradius-6 padding-5" style="position: absolute; left: 10px; top: 73px; max-height: 160px; z-index:6;width: 250px;display: none">
             </div>
-            <div id="db-downcontainer" class="hidden borderradius-6 bg-white border-grey" style="z-index:3;width:330px;height:205px;position:absolute;top:40px;left:10px">
+            <div id="db-downcontainer" class="hidden borderradius-6 bg-white border-grey" style="z-index:7;width:330px;height:205px;position:absolute;top:40px;left:10px">
                 <div class="width-100per borderbottom-lightgrey flex-row align-center justify-between" style="height:34px;">
                     <span class="marginleft-10 fontsize-14">编辑鉴权信息</span>
                     <div onclick="closeeditdatabase()" class="cursor-pointer borderradius-6 padding-5 hover-bg-lightgrey flex-row align-center marginright-5"><img src="/static/global/images/close.png" class="img-16"></div>
@@ -90,61 +90,25 @@
                 </div> 
             </div>
         </div>
-        <div id="domain-dimension-container" class="width-100per overflowy-auto paddingtop-10" style="height:calc(100% - 84px);">
-            <!--
-            <div id="ly_1" class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="">
-                <img src="/static/global/images/right.png" class="img-10 marginright-5 marginleft-5">
-                <img src="/static/global/images/domain.png" class="img-20 marginright-5">
-                <span style="margin-bottom: 2px;">网络空间安全</span>
-            </div>
-            <div id="ly_1_wd_1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
-                <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
-                <span style="margin-bottom: 2px;">学术</span>
-            </div>
-            <div id="ly_1_wd_1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
-                <img src="/static/global/images/dimension.png" class="img-16 marginleft-5" style="margin-right: 8px;">
-                <span style="margin-bottom: 2px;">标准</span>
-            </div>
-            <div id="ly-1-wd-1" class="cursor-pointer padding-5 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="margin-left: 40px;">
-                <div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px; margin-top: 1px;">+</div>
-                <span style="margin-bottom: 2px;">创建维度</span>
-            </div>
-            <div class="cursor-pointer padding-5 marginleft-10 marginright-10 borderradius-6 hover-bg-darkyellow flex-row align-center" style="">
-                <div class="borderradius-6 flex-row align-center justify-center bg-lightgrey marginright-5 marginleft-5" style="font-size: 16px;width: 18px;height: 18px; margin-top: 1px;">+</div>
-                <span style="margin-bottom: 2px;">创建新领域</span>
-            </div>
-            -->
-        </div>
+        <div id="domain-tree" class="width-100per overflow-auto padding-5 borderradius-6" style="height:calc(100% - 83px)"></div>
     </div>
     <!-- 中间的拖动条 -->
     <div id="main-width-handler" class="height-100per width-changer" style="width:2px;">
 
     </div>
     <!-- 右侧的内容-维度 -->
-    <div id="main-right-box-nodata" class="flex-column width-75per height-100per bg-grey-to-white-top" style="width: calc(80% - 2px);">
-        <div class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;">
+    <div id="main-right-box-nodata" class="flex-column width-75per height-100per bg-grey-to-white-top" style="width: calc(75% - 2px);">
+        <div class="width-100per height-100per flex-column justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;">
             暂无任何领域
+            <div class="color-blue hover-text-underline cursor-pointer fontsize-14 margintop-15" onclick="domain_clickadddomain()">点此创建领域</div>
         </div>
     </div>
     <!-- 右侧的内容-领域 -->
-    <div id="main-right-box-domain" class="flex-column width-75per height-100per bg-white" style="width: calc(80% - 2px);display: none;">
+    <div id="main-right-box-domain" class="flex-column width-75per height-100per bg-white" style="width: calc(75% - 2px);display: none;">
         <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:49px">
-            <span id="detail-domain-name" class="fontweight-600 marginleft-15">领域</span>
-        </div>
-        <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:34px">
-            <div name="domaintab" onclick="domainclicktab(0)" class="chosen-lightblue cursor-pointer padding-10-5 marginright-5 marginleft-15 borderradius-6 flex-row align-center">
-                <span class="fontsize-12">概览</span>
-            </div>
-            <div name="domaintab" onclick="domainclicktab(1)" class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
-                <span class="fontsize-12">设置</span>
-            </div>
-        </div>
-        <div id="domain-page-0" class="width-100per overflowy-auto bg-grey-to-white-top flex-column" style="height: calc(100% - 83px);">
-            <div class="width-100per padding-5 flex-row align-center justify-between" style="height:50px;position: relative;">
-                <div id="domain-graph-shaixuan" class="marginleft-10 borderradius-6 flex-row cursor-pointer align-center padding-10-5 bg-blue hover-bg-blue-2" style="height: 28px">
-                    <img src="/static/global/images/shaixuan.png" class="img-16">
-                    <span class="color-white fontweight-600 fontsize-14" style="line-height: 24px; margin-left: 2px;">筛选</span>
-                </div>
+            <span id="detail-domain-name" class="fontweight-600 marginleft-15 width-20per">领域</span>
+            <div class="width-80per padding-5 flex-row align-center justify-between" style="height:50px;position: relative;">
+                <div></div>
                 <div id="domain-graph-add-button" onclick="domaingraphadd()" class="cursor-pointer borderradius-6 fontsize-14 flex-row align-center justify-center bg-blue marginright-10 hover-bg-blue-2" style="width: 70px;height: 28px;z-index: 10;">
                     <span class="color-white fontweight-600" style="line-height: 28px;">创建</span>
                     <img src="/static/global/images/down-thick-white.png" class="img-12 marginleft-5">
@@ -156,6 +120,10 @@
                     </div>
                     <div class="width-100per bg-white borderradius-6-bottom flex-column" style="height:calc(100% - 39px);padding: 7px;padding-bottom: 4px;">
                         <div onclick="domain_clickadddomain()" class="cursor-pointer width-100per borderradius-6 hover-bg-lightblue flex-row align-center hover-fontweight-600 hover-color-blue" style="height: 30px;margin-bottom: 3px;">
+                            <img src="/static/global/images/domain-blue.png" class="img-20 marginleft-10">
+                            <span style="line-height: 20px;margin-left: 6px" class="marginleft-10">创建新领域</span>
+                        </div>
+                        <div onclick="domain_clickadddimension()" class="cursor-pointer width-100per borderradius-6 hover-bg-lightblue flex-row align-center hover-fontweight-600 hover-color-blue" style="height: 30px;margin-bottom: 3px;">
                             <img src="/static/global/images/dimension-blue.png" class="img-16 marginleft-10">
                             <span style="line-height: 20px;" class="marginleft-10">创建维度</span>
                         </div>
@@ -170,22 +138,33 @@
                     </div>
                 </div>
             </div>
-            <div class="padding-15 width-100per flex-row align-center" style="height: calc(100% - 50px);padding-top:0px; position: relative;">
-                <div id="domain-tree" class="overflow-auto marginright-10 height-100per borderradius-6 border-lightgrey bg-white" style="width: calc(25% - 10px);"></div>
-                <div id="domain-graph-tuli" class="fontsize-14 overflowy-auto flex-column" style="position: absolute; top: 5px; left: calc(25% + 12px); padding: 5px; background-color: #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);max-height: 200px;z-index: 2">
+        </div>
+        <div class="width-100per borderbottom-lightgrey flex-row align-center" style="height:34px">
+            <div name="domaintab" onclick="domainclicktab(0)" class="chosen-lightblue cursor-pointer padding-10-5 marginright-5 marginleft-15 borderradius-6 flex-row align-center">
+                <span class="fontsize-12">概览</span>
+            </div>
+            <div name="domaintab" onclick="domainclicktab(1)" class="cursor-pointer padding-10-5 marginright-5 borderradius-6 hover-bg-lightgrey flex-row align-center">
+                <span class="fontsize-12">设置</span>
+            </div>
+        </div>
+        <div id="domain-page-0" class="width-100per overflowy-auto bg-grey-to-white-top flex-column" style="height: calc(100% - 83px);">
+            
+            <div class="padding-15 width-100per flex-row align-center height-100per" style="position: relative;">
+                
+                <div id="domain-graph-tuli" class="fontsize-14 overflowy-auto flex-column" style="position: absolute; top: 20px; left: 20px; padding: 5px; background-color: #ffffff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);max-height: 200px;z-index: 2">
                     <div>图例</div>
                 </div>
-                <div id="domain-graph-error" class="borderradius-6 border-lightgrey width-75per height-100per flex-row align-center justify-center" style="display: none;">
+                <div id="domain-graph-error" class="borderradius-6 border-lightgrey width-100per height-100per flex-row align-center justify-center" style="display: none;">
                     <span class="fontsize-18 marginleft-10 fontweight-600" style="color: #d81e06;">[ERROR] 获取数据失败</span>
                     <button onclick="GetDomainGraph()" type="button" class="marginleft-20 layui-btn layui-btn-normal" style="width:70px;border-radius:6px;font-weight:600;height:28px;line-height:28px;">
                         重试
                     </button>
                 </div>
-                <div id="domain-graph-loading" class="borderradius-6 border-lightgrey width-75per height-100per flex-row align-center justify-center" style="display: none;">
+                <div id="domain-graph-loading" class="borderradius-6 border-lightgrey width-100per height-100per flex-row align-center justify-center" style="display: none;">
                     <img src="/static/global/images/loading.gif" class="img-20">
                     <span class="fontsize-18 marginleft-10 fontweight-600" style="color: #1c86ee;">获取数据中</span>
                 </div>
-                <div id="domain-graph" class="borderradius-6 border-lightgrey bg-grid-white width-75per height-100per" style="display: none;">
+                <div id="domain-graph" class="borderradius-6 border-lightgrey bg-grid-white width-100per height-100per" style="display: none;">
                 </div>
             </div>
         </div>

@@ -77,8 +77,9 @@ function GetDomainTree() {
                 */
             }
             else if(res.status == "success") {
+                currentnodeid = -1
                 const container = $("div#domain-tree").empty()
-                sessionStorage.setItem("domaintreejson", res.resultdata)
+                sessionStorage.setItem("domaintreejson", JSON.stringify(res.resultdata))
                 res.resultdata[0].level = 0
                 let queue = res.resultdata.slice()
                 addclasses_classid = -1
@@ -86,7 +87,7 @@ function GetDomainTree() {
                     let item = queue.shift()
                     // 绘制
                     var classstr = `
-                        <div id="domain_tree_`+item.id.toString()+`" onclick="domaintree_click(`+item.id.toString()+`, '`+item.name+`')" class="padding-10-5 cursor-pointer hover-bg-lightgrey" style="margin-left: `+(item.level*24).toString()+`px">
+                        <div id="domain_tree_`+item.id.toString()+`" onclick="domaintree_click(`+item.id.toString()+`, '`+item.name+`')" class="borderradius-6 padding-10-5 cursor-pointer hover-bg-darkyellow" style="margin-left: `+(item.level*24).toString()+`px">
                             `+ item.name +`
                         </div>
                     `
@@ -98,16 +99,22 @@ function GetDomainTree() {
                         }
                     }
                 }
+                domaintree_click(res.resultdata[0].id, res.resultdata[0].name)
             }
         }
     })
 }
 
 function domaintree_click(id, name) {
+    if (currentnodeid != -1) {
+        document.getElementById("domain_tree_"+currentnodeid.toString()).classList.remove("chosen-darkgreen")
+        document.getElementById("domain_tree_"+currentnodeid.toString()).classList.add("hover-bg-darkyellow")
+    }
+    document.getElementById("domain_tree_"+id.toString()).classList.remove("hover-bg-darkyellow")
+    document.getElementById("domain_tree_"+id.toString()).classList.add("chosen-darkgreen")
     GetrelatedGraph(id)
+    currentnodeid = id
 }
-
-
 
 // 获取相邻节点的id
 function GetrelatedGraph(id) {
@@ -399,7 +406,6 @@ function clickclosepopup() {
     document.getElementById("popup").style.display = "none"
 }
 
-
 // 点击了添加新维度
 function domain_clickadddomain() {
     const container = $("div#popup").empty()
@@ -408,7 +414,80 @@ function domain_clickadddomain() {
     <div id="popupcontainer-adddimension" class="borderradius-6 padding-25 bg-white flex-column" style="width: 450px;padding-left:30px;padding-bottom:10px">
         <!-- 标题和关闭按钮 -->
         <div class="width-100per flex-row align-center justify-between marginbottom-10">
-            <span class="fontsize-20 fontweight-600">添加维度</span>
+            <span class="fontsize-20 fontweight-600">创建新领域</span>
+            <div onclick="clickclosepopup()" class="cursor-pointer borderradius-6 padding-5 hover-bg-lightgrey flex-row align-center marginright-5"><img src="/static/global/images/close.png" class="img-22"></div>
+        </div>
+        <!-- 标题 -->
+        <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
+            领域名
+        </div>
+        <!-- 内容-输入框 -->
+        <input id="popup-domain-adddimension-dimensionname" class="margintop-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 25px);">
+        <!-- 分割 -->
+        <div class="width-100per" style="height:10px;"></div>
+        <!-- 标题 -->
+        <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
+            领域描述
+        </div>
+        <!-- 内容-输入框 -->
+        <textarea id="popup-domain-adddimension-description" class="margintop-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 25px);height:100px;resize:none"></textarea>
+        <!-- 错误信息和提交按钮 -->
+        <div class="width-100per margintop-15 flex-row align-center justify-between" style="height:39px;">
+            <div id="popup-domain-adddimension-errmsg" class="color-red fontsize-14" style="margin-bottom:6px"></div>
+            <div class="flex-row align-center">
+                <img id="popup-domain-adddimension-loading" src="/static/global/images/loading.gif" class="hidden img-18 marginright-10">
+                <button onclick="domain_submitnewdomain()" type="button" class="layui-btn layui-btn-normal" style="width:70px;border-radius:6px;font-weight:600;height:28px;line-height:28px;">
+                    保存
+                </button>
+            </div>
+        </div> 
+    </div>
+    `
+    $(adddomain).appendTo(container)
+}
+
+function domain_submitnewdomain() {
+    document.getElementById("popup-domain-adddimension-errmsg").innerHTML = ""
+    const domainname = document.getElementById("popup-domain-adddimension-dimensionname").value
+    const description = document.getElementById("popup-domain-adddimension-description").value
+    if (domainname == "") {
+        document.getElementById("popup-domain-adddimension-errmsg").innerHTML = "请输入领域名"
+        return
+    } 
+    var formFile = new FormData()
+    formFile.append("newdomain", domainname)
+    formFile.append("description", description)
+    var data = formFile;
+    $.ajax({
+        url: "/api/createnewdomain",
+        data: data,
+        type: "POST",
+        dataType: "json",
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+            if(res.status == "fail") {
+                document.getElementById("popup-domain-adddimension-errmsg").innerHTML = res.resultdata
+            }
+            else if(res.status == "success") {
+                clickclosepopup()
+                Showmsg("success", "添加领域 " + domainname + " 成功")
+                getdomains()
+            }
+        }
+    })
+}
+
+// 点击了添加新维度
+function domain_clickadddimension() {
+    const container = $("div#popup").empty()
+    document.getElementById("popup").style.display = "flex"
+    const adddomain = `
+    <div id="popupcontainer-adddimension" class="borderradius-6 padding-25 bg-white flex-column" style="width: 450px;padding-left:30px;padding-bottom:10px">
+        <!-- 标题和关闭按钮 -->
+        <div class="width-100per flex-row align-center justify-between marginbottom-10">
+            <span class="fontsize-20 fontweight-600">创建维度</span>
             <div onclick="clickclosepopup()" class="cursor-pointer borderradius-6 padding-5 hover-bg-lightgrey flex-row align-center marginright-5"><img src="/static/global/images/close.png" class="img-22"></div>
         </div>
         <!-- 标题 -->
@@ -480,18 +559,23 @@ function domain_submitnewdimension() {
             else if(res.status == "success") {
                 clickclosepopup()
                 Showmsg("success", "添加维度 " + dimensionname + " 成功")
-                getdomainsanddimensions()
+                getdomains()
             }
         }
     })
 }
 
 function domain_clickcategoryofdimension() {
-    const domainsanddimensions = JSON.parse(sessionStorage.getItem("domainsanddimensions"))
-    var dimensions = domainsanddimensions.dimensions.filter(function(item) {
-        return item.domain == document.getElementById("detail-domain-name").innerHTML
-    })
-    if (dimensions.length == 0) {
+    const domaintreejson = JSON.parse(sessionStorage.getItem("domaintreejson"))
+    const firstlevels = domaintreejson[0].children
+    var hasdimension = false
+    for (var i=0; i<firstlevels.length; i++) {
+        if (firstlevels[i].label == "维度名") {
+            hasdimension = true
+            break
+        }
+    }
+    if (!hasdimension) {
         Showmsg("error", "该领域下没有维度")
         return
     }
@@ -557,15 +641,15 @@ function domain_clickcategoryofdimension() {
                 </div>
                 <!-- 内容-输入框 -->
                 <div class="margintop-5 borderradius-6" style="width: calc(100% - 5px);height:250px">
-                    <div class="color-grey fontsize-12">1 我们推荐你以.json文件导入知识分类，其中必须包含<分类名称>和<分类描述>字段，以及指向父分类名称的<所属父分类>字段。优点是全面，可以自定义其他字段。</div>
-                    <div class="color-blue hover-text-underline cursor-pointer color-grey fontsize-12" style="margin-top:3px">JSON文件模板下载</div>
+                    <div class="color-grey fontsize-12">1 推荐以.json文件导入知识分类。每个分类必须包含四项字段：id、父分类id、元数据、其他属性。前两者用于确定分类间父子关系，根元素父分类id固定为-1，上传后会重新分配id；元数据必须包含三项字段：分类名称，分类描述和分类来源；其他键值对放在其他属性中。</div>
+                    <div class="color-blue hover-text-underline cursor-pointer fontsize-12" style="margin-top:3px">JSON文件模板下载</div>
 
-                    <div class="color-grey fontsize-12 margintop-10">2 若不包含其他字段，可上传.txt文件，文件每一行是一个要上传的分类名称，行与行之间通过Tab符号数量，表示父子关系。优点是快速，后续可通过界面编辑属性。</div>
-                    <div class="color-blue hover-text-underline cursor-pointer color-grey fontsize-12" style="margin-top:3px">TXT文件模板下载</div>
+                    <div class="color-grey fontsize-12 margintop-10">2 也可上传只包含各分类名的.txt文件，行与行之间的分类名通过Tab符号数量，表示父子关系。</div>
+                    <div class="color-blue hover-text-underline cursor-pointer fontsize-12" style="margin-top:3px">TXT文件模板下载</div>
 
                     <input type="file" id="popup-domain-addcategory-addfile" class="margintop-15 marginbottom-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 22px);" accept=".json, .txt">   
                     
-                    <div class="margintop-20">知识分类将上传到<span id="addclass_chosenclassname" class="fontweight-600 marginleft-10 marginright-10">-</span>下</div>
+                    <div class="margintop-10">知识分类将上传到<span id="addclass_chosenclassname" class="fontweight-600 marginleft-10 marginright-10">-</span>下</div>
                 </div>
             </div>
         </div>
@@ -589,9 +673,9 @@ function domain_clickcategoryofdimension() {
 function addcategory_showselect() {
     const container = $("div#popup-domain-addcategory-dimensionselects").empty()
     document.getElementById("popup-domain-addcategory-dimensionselects").style.display = "flex"
-    const domainsanddimensions = JSON.parse(sessionStorage.getItem("domainsanddimensions"))
-    var dimensions = domainsanddimensions.dimensions.filter(function(item) {
-        return item.domain == document.getElementById("detail-domain-name").innerHTML
+    const firstlevels = JSON.parse(sessionStorage.getItem("domaintreejson"))[0].children
+    var dimensions = firstlevels.filter(function(item) {
+        return item.label == "维度名"
     })
     if (dimensions.length > 0) {
         for (var i = 0; i < dimensions.length; i++) {
@@ -599,7 +683,7 @@ function addcategory_showselect() {
             var dimensionname = dimension.name
             var dimensionid = dimension.id
             var dimensionselect = `
-                <div onclick="addcategory_choosedimension('`+dimensionname+`', `+dimensionid.toString()+`)" class="cursor-pointer borderradius-6 width-100per hover-bg-lightgrey padding-10">
+                <div onclick="addcategory_choosedimension('`+dimensionname+`', `+dimensionid.toString()+`)" class="cursor-pointer borderradius-6 width-100per hover-bg-lightgrey padding-10-7">
                     `+dimensionname+`
                 </div>
             `
@@ -750,7 +834,7 @@ function domain_clickaddontologyofcategory() {
     <div id="popupcontainer-addcategory" class="borderradius-6 padding-25 bg-white flex-column" style="width: 700px;padding-left:30px;padding-bottom:10px">
         <!-- 标题和关闭按钮 -->
         <div class="width-100per flex-row align-center justify-between marginbottom-10">
-            <span class="fontsize-20 fontweight-600">维度下添加知识分类</span>
+            <span class="fontsize-20 fontweight-600">为知识分类创建本体</span>
             <div onclick="clickclosepopup()" class="cursor-pointer borderradius-6 padding-5 hover-bg-lightgrey flex-row align-center marginright-5"><img src="/static/global/images/close.png" class="img-22"></div>
         </div>
         <!-- 标题 -->
