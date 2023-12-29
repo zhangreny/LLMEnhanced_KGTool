@@ -230,7 +230,7 @@ def api_getontologyofclass():
             while queue:
                 currentpop = queue.pop(0)
                 current_id, current_treepath = currentpop[0], currentpop[1]
-                result = list(session.run("MATCH (m)-[:分类本体]->(n:分类本体) WHERE ID(m)=" + str(current_id)+ " return n.name as Name, labels(n) as Label, id(n) as Id"))
+                result = list(session.run("MATCH (m)-[:本体子项]->(n:分类本体) WHERE ID(m)=" + str(current_id)+ " return n.name as Name, labels(n) as Label, id(n) as Id"))
                 for i in range(len(result)):
                     record = result[i]
                     node = {}
@@ -485,6 +485,27 @@ def api_getalltreesofdomain():
         print("===========================")
         return json.dumps({"status": "fail", "resultdata": "获取领域树状结构失败"})
     
+@api_index.route('/template_download/add_category_to_dimension/json')
+def template_download_add_category_to_dimension_json():
+    # 文件路径
+    file_path = '../filesfordownload/JSON模板-维度下添加知识分类.zip'
+    # 发送文件
+    return send_file(file_path, as_attachment=True)
+
+@api_index.route('/template_download/add_category_to_dimension/txt')
+def template_download_add_category_to_dimension_txt():
+    # 文件路径
+    file_path = '../filesfordownload/TXT模板-维度下添加知识分类.txt'
+    # 发送文件
+    return send_file(file_path, as_attachment=True)
+
+@api_index.route('/template_download/add_ontology_to_category/json')
+def template_download_add_ontology_to_category_json():
+    # 文件路径
+    file_path = '../filesfordownload/JSON模板-为知识分类创建本体.zip'
+    # 发送文件
+    return send_file(file_path, as_attachment=True)
+
 @api_index.route("/api/uploadontologytoclass", methods=["POST"], strict_slashes=False)
 def api_uploadontologytoclass():
     try:
@@ -496,36 +517,42 @@ def api_uploadontologytoclass():
         if not inputfile:
             return json.dumps({"status": "fail", "resultdata": "请上传非空本体文件"})
         if inputfile.filename.split(".")[-1] == "json":
-            queue = json.loads(inputfile.read().decode("utf-8"))
-            for q in queue:
-                q["level"] = 0
-            levelsandid = {}
+            inputdict = json.loads(inputfile.read().decode("utf-8"))
+            category_names = set()
+            duplicate = []
+            for item in inputdict:
+                if item["id"] in category_names:
+                    duplicate.append(item['id'])
+                else:
+                    category_names.add(item["id"])
+            if len(duplicate) > 0:
+                return json.dumps({"status": "fail", "resultdata": "存在重复id: "+str(duplicate)})
+            ids = {}
             with driver.session() as session:
                 tx = session.begin_transaction()
                 try:
-                    while len(queue) > 0:
-                        currentpop = queue.pop(0)
-                        props = deepcopy(currentpop)
-                        if "子分类" in props:
-                            del props["子分类"]
-                        del props["level"]
-                        if "分类名" in props:
-                            name = props["分类名"]
-                        elif "属性名" in props:
-                            name = props["属性名"]
+                    domainname = list(tx.run("MATCH (n) where id(n)=" + domainid + " RETURN n.name as Name"))[0]["Name"]
+                    for item in inputdict:
+                        if not ("id" in item and "父本体id" in item and "本体类型" in item and "本体属性" in item):
+                            tx.rollback()
+                            return json.dumps({"status": "fail", "resultdata": "不满足字段要求: id，父分类id，本体类型，本体属性"})
                         # 创建节点
-                        resultid = list(tx.run("Create (x:分类本体{name:'"+name+"'}) set x+=$props RETURN id(x) as id", props=props))[0]["id"]
+                        props = {}
+                        props["本体属性"] = str(item["本体属性"])
+                        props["domain"] = domainname
+                        props["dimension"] = dimensionname
+                        label = item["本体类型"]
+                        if label == "本体分类":
+                            resultid = list(tx.run("Create (x:"+label+"{name:'"+item["本体属性"]["本体分类名"]+"'}) set x+=$props RETURN id(x) as id", props=props))[0]["id"]
+                        elif label == "本体属性":
+                            resultid = list(tx.run("Create (x:"+label+"{name:'"+item["本体属性"]["本体属性名"]+"'}) set x+=$props RETURN id(x) as id", props=props))[0]["id"]
+                        ids[item["id"]] = resultid
                         # 创建关系
-                        if currentpop["level"] == 0:
+                        if item["父本体id"] == -1:
                             fatherid = clickedid
                         else:
-                            fatherid = levelsandid[currentpop["level"] - 1]
-                        tx.run("MATCH (m) where id(m)=" + str(fatherid) + " MATCH (n) where id(n)=" + str(resultid) + " Create (m)-[r:分类本体]->(n) return id(r) as relaid")
-                        levelsandid[currentpop["level"]] = resultid
-                        if "子分类" in currentpop:
-                            for i in range(len(currentpop["子分类"])):
-                                currentpop["子分类"][len(currentpop["子分类"])-1-i]["level"] = currentpop["level"] + 1
-                                queue.insert(0, currentpop["子分类"][len(currentpop["子分类"])-1-i])
+                            fatherid = ids[item["父本体id"]]
+                        tx.run("MATCH (m) where id(m)=" + str(fatherid) + " MATCH (n) where id(n)=" + str(resultid) + " Create (m)-[r:本体子项]->(n) return id(r) as relaid")
                     tx.commit()
                     return json.dumps({"status": "success"})
                 except Exception as e:
@@ -541,17 +568,3 @@ def api_uploadontologytoclass():
         print("[An Error Occurred]: " + str(e))
         print("===========================")
         return json.dumps({"status": "fail", "resultdata": str(e)})
-    
-@api_index.route('/template_download/add_category_to_dimension/json')
-def template_download_add_category_to_dimension_json():
-    # 文件路径
-    file_path = '../filesfordownload/JSON模板-维度下添加知识分类.zip'
-    # 发送文件
-    return send_file(file_path, as_attachment=True)
-
-@api_index.route('/template_download/add_category_to_dimension/txt')
-def template_download_add_category_to_dimension_txt():
-    # 文件路径
-    file_path = '../filesfordownload/TXT模板-维度下添加知识分类.txt'
-    # 发送文件
-    return send_file(file_path, as_attachment=True)

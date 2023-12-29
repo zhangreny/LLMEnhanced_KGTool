@@ -647,7 +647,7 @@ function domain_clickcategoryofdimension() {
                 <!-- 内容-输入框 -->
                 <div class="margintop-5 borderradius-6" style="width: calc(100% - 5px);height:250px">
                     <div class="color-grey fontsize-12">1 推荐以.json文件导入知识分类。每个分类必须包含四项字段：id、父分类id、元数据、其他属性。前两者用于确定分类间父子关系，根元素父分类id固定为-1，上传后会重新分配id；元数据必须包含三项字段：分类名称，分类描述和分类来源；其他键值对放在其他属性中。</div>
-                    <div onclick="DownloadJSONtemplate_addcategory()" class="color-blue hover-text-underline cursor-pointer fontsize-12" style="margin-top:3px">JSON文件模板下载</div>
+                    <div onclick="DownloadJSONtemplate_addcategory()" class="color-blue hover-text-underline cursor-pointer fontsize-12" style="margin-top:3px">JSON文件模板及构建教程下载</div>
 
                     <div class="color-grey fontsize-12 margintop-10">2 也可上传只包含各分类名的.txt文件，行与行之间的分类名通过Tab符号数量，表示父子关系。</div>
                     <div onclick="DownloadTXTtemplate_addcategory()" class="color-blue hover-text-underline cursor-pointer fontsize-12" style="margin-top:3px">TXT文件模板下载</div>
@@ -763,7 +763,9 @@ function addcategory_choosedimension(dimensionname, dimensionid) {
 function dimensiontree_clickclass(id, classname) {
     if (addclasses_classid != -1) {
         document.getElementById("addclass_class_"+addclasses_classid.toString()).classList.remove("chosen-lightblue")
+        document.getElementById("addclass_class_"+addclasses_classid.toString()).classList.add("hover-bg-lightgrey")
     }
+    document.getElementById("addclass_class_"+id.toString()).classList.remove("hover-bg-lightgrey")
     document.getElementById("addclass_class_"+id.toString()).classList.add("chosen-lightblue")
     addclasses_classid = id
     document.getElementById("addclass_chosenclassname").innerHTML = classname
@@ -832,13 +834,17 @@ function DownloadTXTtemplate_addcategory() {
     window.open('/template_download/add_category_to_dimension/txt', '_blank');
 }
 
-
 function domain_clickaddontologyofcategory() {
-    const domainsanddimensions = JSON.parse(sessionStorage.getItem("domainsanddimensions"))
-    var dimensions = domainsanddimensions.dimensions.filter(function(item) {
-        return item.domain == document.getElementById("detail-domain-name").innerHTML
-    })
-    if (dimensions.length == 0) {
+    const domaintreejson = JSON.parse(sessionStorage.getItem("domaintreejson"))
+    const firstlevels = domaintreejson[0].children
+    var hasdimension = false
+    for (var i=0; i<firstlevels.length; i++) {
+        if (firstlevels[i].label == "维度名") {
+            hasdimension = true
+            break
+        }
+    }
+    if (!hasdimension) {
         Showmsg("error", "该领域下没有维度")
         return
     }
@@ -904,14 +910,12 @@ function domain_clickaddontologyofcategory() {
                 </div>
                 <!-- 内容-输入框 -->
                 <div class="margintop-5 borderradius-6" style="width: calc(100% - 5px);height:250px">
-                    <div class="color-grey fontsize-12">我们只接受以.json文件格式导入分类本体，因为本体文件中必须包含各种字段。</div>
-                    <div class="color-grey fontsize-12 margintop-5">必须包含<本体名称>字段和<本体类型>字段，其中<本体类型>字段只可选填"分类"或者"属性"，其次是<子分类>字段，其值为一个列表，包含其下的本体分类或本体属性。</div>
-                    <div class="color-grey fontsize-12 margintop-5">若<本体类型>字段值为"属性"，则还需要包含<国标要求>字段，用于标识这个属性值的国标要求值。</div>
-                    <div class="color-blue hover-text-underline cursor-pointer color-grey fontsize-12" style="margin-top:3px">JSON文件模板下载</div>
+                    <div class="color-grey fontsize-12">推荐以.json文件导入某分类的本体。每个本体必须包含四项字段：id、父本体id、本体类型、本体属性。前两者用于确定分类间父子关系，根元素父本体id固定为-1；本体类型必须是以下二选一：本体分类/本体属性。</div><div class="margintop-5 color-grey fontsize-12">若类型为本体分类，则本体属性字段除必须包含本体分类名外，可自行添加键值对。若类型为本体属性，则本体属性字段至少包含如下三项：本体属性名，属性值要求，属性值要求来源。</span></div>
+                    <div onclick="DownloadJSONtemplate_addontology()" class="color-blue hover-text-underline cursor-pointer color-grey fontsize-12" style="margin-top:3px">JSON文件模板及构建教程下载</div>
 
                     <input type="file" id="popup-domain-addcategory-addfile" class="margintop-15 marginbottom-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 22px);" accept=".json, .txt">   
                     
-                    <div class="margintop-20">知识分类将上传到<span id="addclass_chosenclassname" class="fontweight-600 marginleft-10 marginright-10">-</span>下</div>
+                    <div class="margintop-10">本体将上传到<span id="addclass_chosenclassname" class="fontweight-600 marginleft-10 marginright-10">-</span>下</div>
                 </div>
             </div>
         </div>
@@ -986,4 +990,8 @@ function popup_submit_addontologyofclass() {
             }
         }
     })
+}
+
+function DownloadJSONtemplate_addontology() {
+    window.open('/template_download/add_ontology_to_category/json', '_blank');
 }
