@@ -271,6 +271,7 @@ def api_getdomaingraph():
         print("===========================")
         return json.dumps({"status": "fail", "resultdata": "获取领域下内容失败"})
     res = {}
+    nodestmp = []
     res["nodes"] = []
     res["links"] = []
     try:
@@ -287,7 +288,9 @@ def api_getdomaingraph():
             node = record["Properties"]
             node["id"] = record["Id"]
             node["label"] = record["Label"][0]
-            if node not in res["nodes"]:
+            if node not in nodestmp:
+                nodestmp.append(node)
+                node["level"] = 0
                 res['nodes'].append(node)
             if len(res["links"]) >= maxrelations:
                 return json.dumps({"status": "success", "resultdata": res})
@@ -296,10 +299,12 @@ def api_getdomaingraph():
         node = domainnode["Properties"]
         node["id"] = domainnode["Id"]
         node["label"] = domainnode["Label"][0]
+        nodestmp.append(node)
+        node["level"] = 1
         res['nodes'].append(node)
         queue = [domainnode["Id"]]
         with driver.session() as session:
-            for _ in range(level):
+            for j in range(level):
                 currentlist = deepcopy(queue)
                 queue = []
                 for current_id in currentlist:
@@ -315,9 +320,11 @@ def api_getdomaingraph():
                         node = record["Properties"]
                         node["id"] = record["Id"]
                         node["label"] = record["Label"][0]
-                        if node not in res["nodes"]:
-                            res['nodes'].append(node)
+                        if node not in nodestmp:
+                            nodestmp.append(node)
                             queue.append(record["Id"])
+                            node["level"] = j+2
+                            res['nodes'].append(node)
                         if len(res["links"]) >= maxrelations:
                             return json.dumps({"status": "success", "resultdata": res})
         return json.dumps({"status": "success", "resultdata": res})
