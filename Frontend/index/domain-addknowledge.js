@@ -151,6 +151,15 @@ function domain_clickadddimension() {
         </div>
         <!-- 内容-输入框 -->
         <textarea id="popup-domain-adddimension-description" class="margintop-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 25px);height:100px;resize:none"></textarea>
+        <!-- 分割 -->
+        <div class="width-100per" style="height:10px;"></div>
+        <!-- 标题 -->
+        <div class="paddingtop-10 paddingbottom-5 flex-row align-center fontweight-600" style="">
+            维度素材元数据键
+        </div>
+        <div class="color-grey fontsize-12">用于规定此维度素材的元数据键，每行输入一个。</div>
+        <!-- 内容-输入框 -->
+        <textarea id="popup-domain-adddimension-metakeys" class="margintop-10 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 25px);height:100px;resize:none"></textarea>
         <!-- 错误信息和提交按钮 -->
         <div class="width-100per margintop-15 flex-row align-center justify-between" style="height:39px;">
             <div id="popup-domain-adddimension-errmsg" class="color-red fontsize-14" style="margin-bottom:6px"></div>
@@ -174,8 +183,13 @@ function domain_submitnewdimension() {
     const domainname = document.getElementById("popup-domain-adddimension-domainname").value
     const dimensionname = document.getElementById("popup-domain-adddimension-dimensionname").value
     const description = document.getElementById("popup-domain-adddimension-description").value
+    const metakeys = document.getElementById("popup-domain-adddimension-metakeys").value
     if (dimensionname == "") {
         document.getElementById("popup-domain-adddimension-errmsg").innerHTML = "请输入维度名"
+        return
+    } 
+    if (metakeys == "") {
+        document.getElementById("popup-domain-adddimension-errmsg").innerHTML = "请输入维度素材元数据键"
         return
     } 
     // 显示loading框
@@ -184,6 +198,7 @@ function domain_submitnewdimension() {
     formFile.append("id", domainid)
     formFile.append("newdimension", dimensionname)
     formFile.append("description", description)
+    formFile.append("metakeys", metakeys)
     var data = formFile;
     $.ajax({
         url: "/api/createnewdimensionofdomain",
@@ -615,7 +630,6 @@ function popup_submit_addontologyofclass() {
             if(res.status == "success"){
                 clickclosepopup()
                 closeadd()
-                GetDomainGraph()
                 GetDomainTree()
                 Showmsg("success", "添加本体文件成功！")
             }
@@ -650,7 +664,7 @@ function domain_clickaddmaterialaccordingtoontology() {
     const container = $("div#popup").empty()
     document.getElementById("popup").style.display = "flex"
     const adddomain = `
-    <div id="popupcontainer-addcategory" class="borderradius-6 padding-25 bg-white flex-column" style="width: 700px;padding-left:30px;padding-bottom:10px">
+    <div id="popupcontainer-addcategory" class="borderradius-6 padding-25 bg-white flex-column" style="width: 900px;padding-left:30px;padding-bottom:10px">
         <!-- 标题和关闭按钮 -->
         <div class="width-100per flex-row align-center justify-between marginbottom-10">
             <span class="fontsize-20 fontweight-600">根据本体添加知识素材</span>
@@ -672,7 +686,7 @@ function domain_clickaddmaterialaccordingtoontology() {
                 </div>
                 <!-- 内容-输入框 -->
                 <div class="width-100per" style="position: relative">
-                    <input onclick="addcategory_showselect()" id="popup-domain-addcategory-dimensionname" class="margintop-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 25px);" placeholder="选择维度">     
+                    <input onclick="addmaterial_showselect()" id="popup-domain-addcategory-dimensionname" class="margintop-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 25px);" placeholder="选择维度">     
                     <div id="popup-domain-addcategory-dimensionselects" class="flex-column overflowy-auto border-lightgrey bg-white borderradius-6 padding-5" style="position: absolute; left: 0px; top: 43px; max-height: 160px; width: calc(100% - 4px);display: none">
                     </div>
                 </div>   
@@ -684,7 +698,7 @@ function domain_clickaddmaterialaccordingtoontology() {
         <div class="paddingtop-5 paddingbottom-10 flex-row align-center">
             <div class="flex-column" style="width: calc(50% - 10px)">
                 <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
-                    选择知识分类及展示本体
+                    选择知识分类
                 </div>
                 <!-- 内容-输入框 -->
                 <div id="popup-domain-adddimension-dimensiontree" class="margintop-5 padding-10 borderradius-6 border-lightgrey overflow-auto" style="width: calc(100% - 5px);height:250px">
@@ -703,21 +717,57 @@ function domain_clickaddmaterialaccordingtoontology() {
                     </div>
                 </div>
             </div>
-            <div class="flex-column marginleft-20" style="width: calc(50% - 10px);">
+            <div class="marginleft-20 flex-column" style="width: calc(50% - 10px)">
                 <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
-                    上传本体文件
+                    知识分类本体展示
                 </div>
                 <!-- 内容-输入框 -->
-                <div class="margintop-5 borderradius-6" style="width: calc(100% - 5px);height:250px">
-                    <div class="color-grey fontsize-12">推荐以.json文件导入某分类的本体。每个本体必须包含四项字段：id、父本体id、本体类型、本体属性。前两者用于确定分类间父子关系，根元素父本体id固定为-1；本体类型必须是以下二选一：本体分类/本体属性。</div><div class="margintop-5 color-grey fontsize-12">若类型为本体分类，则本体属性字段除必须包含本体分类名外，可自行添加键值对。若类型为本体属性，则本体属性字段至少包含如下三项：本体属性名，属性值要求，属性值要求来源。</span></div>
-                    <div onclick="DownloadJSONtemplate_addontology()" class="color-blue hover-text-underline cursor-pointer color-grey fontsize-12" style="margin-top:3px">JSON文件模板及构建教程下载</div>
-
-                    <input type="file" id="popup-domain-addcategory-addfile" class="margintop-15 marginbottom-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 22px);" accept=".json, .txt">   
-                    
-                    <div class="margintop-10">本体将上传到<span id="addclass_chosenclassname" class="fontweight-600 marginleft-10 marginright-10">-</span>下</div>
+                <div id="popup-domain-addmaterial-ontologytree" class="margintop-5 padding-10 borderradius-6 border-lightgrey overflow-auto" style="width: calc(100% - 5px);height:250px">
+                    <div id="ontologytree-choose" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;">
+                        请选择知识分类
+                    </div>
+                    <div id="ontologytree-loading" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;display:none">
+                        <img src="/static/global/images/loading.gif" class="img-18">
+                        <span class="fontsize-16 marginleft-10 fontweight-600" style="color: #1c86ee;">获取数据中</span>
+                        </div>
+                    <div id="ontologytree-error" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;display:none">
+                        <span class="fontsize-16 marginleft-10 fontweight-600" style="color: #d81e06;">[ERROR] 获取数据失败</span>
+                    </div>
+                    <div id="ontologytree-content" class="width-100per height-100per flex-column fontsize-12" style="color: #4b4b4b;display:none">
+                        
+                    </div>
                 </div>
             </div>
         </div>
+        <!-- 标题 -->
+        <div class="paddingtop-10 paddingbottom-10 flex-row align-center">
+            <div class="flex-column" style="width: calc(50% - 10px);">
+                <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
+                    下载素材填写表格
+                </div>
+                <!-- 内容-输入框 -->
+                <div class="margintop-5 borderradius-6 paddingbottom-5" style="width: calc(100% - 5px);height:80px">
+                    <div class="color-grey fontsize-12">为了用户导入数据的方便，我们将本体文件中本体属性作为表格第一行导出为xls文件，并在表格第二行给出这些本体属性的要求值。从第三行开始，你可对应表头填写对应素材数据的属性值。</div>
+                    <div onclick="DownloadXLStutorial_addmaterial()" class="color-blue hover-text-underline cursor-pointer color-grey fontsize-12" style="margin-top:7px">表格填写教程下载</div>
+                    <div id="download_ontology" onclick="DownloadXLStemplate_addmaterial()" class="color-blue hover-text-underline cursor-pointer color-grey fontsize-12" style="margin-top:7px;display:none">素材填写表格文件下载</div>
+                    <div id="download_noontology" class="color-red fontsize-12" style="margin-top:7px">请给分类添加本体后下载填写表格</div>
+                </div>
+            </div>
+            <div class="flex-column marginleft-20" style="width: calc(50% - 10px);">
+                <div class="paddingtop-10 paddingbottom-10 flex-row align-center fontweight-600" style="">
+                    上传素材填写表格文件
+                </div>
+                <!-- 内容-输入框 -->
+                <div class="margintop-5 borderradius-6 paddingbottom-5" style="width: calc(100% - 5px);height:80px">
+
+                    <input type="file" id="popup-domain-addcategory-addfile" class="margintop-5 marginbottom-5 padding-10 borderradius-6 border-lightgrey" style="width: calc(100% - 22px);" accept=".xls, .xlsx, .csv">   
+                    
+                    <div class="margintop-10">素材数据将上传到<span id="addclass_chosenclassname" class="fontweight-600 marginleft-10 marginright-10">-</span>下</div>
+                </div>
+            </div>
+        </div>
+        <!-- 分割 -->
+        <div class="width-100per" style="height:10px;"></div>
         <!-- 错误信息和提交按钮 -->
         <div class="width-100per margintop-15 flex-row align-center justify-between" style="height:39px;">
             <div id="popup-domain-addcategory-errmsg" class="color-red fontsize-14" style="margin-bottom:6px"></div>
@@ -735,3 +785,179 @@ function domain_clickaddmaterialaccordingtoontology() {
     document.getElementById("popup-domain-addcategory-domainname").readOnly = true
 }
 
+function addmaterial_showselect() {
+    const container = $("div#popup-domain-addcategory-dimensionselects").empty()
+    document.getElementById("popup-domain-addcategory-dimensionselects").style.display = "flex"
+    const firstlevels = JSON.parse(sessionStorage.getItem("domaintreejson"))[0].children
+    var dimensions = firstlevels.filter(function(item) {
+        return item.label == "维度名"
+    })
+    if (dimensions.length > 0) {
+        for (var i = 0; i < dimensions.length; i++) {
+            var dimension = dimensions[i]
+            var dimensionname = dimension.name
+            var dimensionid = dimension.id
+            var dimensionselect = `
+                <div onclick="addmaterial_choosedimension('`+dimensionname+`', `+dimensionid.toString()+`)" class="cursor-pointer borderradius-6 width-100per hover-bg-lightgrey padding-10-7">
+                    `+dimensionname+`
+                </div>
+            `
+            $(dimensionselect).appendTo(container)
+        }
+    }
+}
+
+function addmaterial_choosedimension(dimensionname, dimensionid) {
+    document.getElementById("popup-domain-addcategory-dimensionname").value = dimensionname
+    document.getElementById("popup-domain-addcategory-dimensionselects").style.display = "none"
+    // 显示loading框 
+    document.getElementById("dimensiontree-choose").style.display = "none"
+    document.getElementById("dimensiontree-error").style.display = "none"
+    document.getElementById("dimensiontree-content").style.display = "none"
+    document.getElementById("dimensiontree-loading").style.display = "flex"
+
+
+    // 将维度中的知识分类展示在左侧
+    var formFile = new FormData()
+    formFile.append("dimensionid", dimensionid)
+    formFile.append("domainid", currentdomainid)
+    var data = formFile;
+    $.ajax({
+        url: "/api/getclassesofdimension",
+        data: data,
+        type: "POST",
+        dataType: "json",
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+            if(res.status == "success"){
+                const container = $("div#dimensiontree-content").empty()
+                document.getElementById("dimensiontree-choose").style.display = "none"
+                document.getElementById("dimensiontree-error").style.display = "none"
+                document.getElementById("dimensiontree-loading").style.display = "none"
+                document.getElementById("dimensiontree-content").style.display = "flex"
+                res.resultdata[0].level = 0
+                let queue = res.resultdata.slice()
+                addclasses_classid = -1
+                while (queue.length > 0) {
+                    let item = queue.shift()
+                    // 绘制
+                    var classstr = `
+                        <div id="addclass_class_`+item.id.toString()+`" onclick="classtree_clickclass(`+item.id.toString()+`, '`+item.name+`')" class="padding-10-5 cursor-pointer hover-bg-lightgrey" style="margin-left: `+(item.level*24).toString()+`px">
+                            `+ item.name +`
+                        </div>
+                    `
+                    $(classstr).appendTo(container)
+                    if (item.children && item.children.length > 0) {
+                        for (var j=0; j<item.children.length; j++) {
+                            item.children[item.children.length - 1 - j].level = item.level + 1
+                            queue.unshift(item.children[item.children.length - 1 - j])
+                        }
+                    }
+                }
+                document.getElementById("dimensiontree-content").getElementsByTagName("div")[0].click()
+            }
+            else {
+                document.getElementById("dimensiontree-choose").style.display = "none"
+                document.getElementById("dimensiontree-loading").style.display = "none"
+                document.getElementById("dimensiontree-content").style.display = "none"
+                document.getElementById("dimensiontree-error").style.display = "flex"
+
+            }
+        }
+    })
+}
+
+function classtree_clickclass(id, classname) {
+    if (addclasses_classid != -1) {
+        document.getElementById("addclass_class_"+addclasses_classid.toString()).classList.remove("chosen-lightblue")
+        document.getElementById("addclass_class_"+addclasses_classid.toString()).classList.add("hover-bg-lightgrey")
+    }
+    document.getElementById("addclass_class_"+id.toString()).classList.remove("hover-bg-lightgrey")
+    document.getElementById("addclass_class_"+id.toString()).classList.add("chosen-lightblue")
+    addclasses_classid = id
+    document.getElementById("addclass_chosenclassname").innerHTML = classname
+
+    // 显示loading框 
+    document.getElementById("ontologytree-choose").style.display = "none"
+    document.getElementById("ontologytree-error").style.display = "none"
+    document.getElementById("ontologytree-content").style.display = "none"
+    document.getElementById("ontologytree-loading").style.display = "flex"
+
+    // 将分类下的本体展示在本体侧
+    var formFile = new FormData()
+    formFile.append("categoryid", id)
+    var data = formFile;
+    $.ajax({
+        url: "/api/getontologiesofcategory",
+        data: data,
+        type: "POST",
+        dataType: "json",
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+            if(res.status == "success"){
+                const container = $("div#ontologytree-content").empty()
+                document.getElementById("ontologytree-choose").style.display = "none"
+                document.getElementById("ontologytree-error").style.display = "none"
+                document.getElementById("ontologytree-loading").style.display = "none"
+                document.getElementById("ontologytree-content").style.display = "flex"
+                if (res.resultdata.length == 0) {
+                    var classstr = `
+                        <div class="width-100per height-100per flex-column align-center justify-center fontsize-16 fontweight-600" style="color: #4b4b4b;">
+                            暂无本体
+                            <div class="color-blue hover-text-underline cursor-pointer fontsize-14 margintop-15" onclick="skiptoaddontology()">添加本体</div>
+                        </div>
+                    `
+                    $(classstr).appendTo(container)
+                    document.getElementById("download_ontology").style.display = "none"
+                    document.getElementById("download_noontology").style.display = "flex"
+                }
+                else {
+                    document.getElementById("download_noontology").style.display = "none"
+                    document.getElementById("download_ontology").style.display = "flex"
+                    for (var i=0; i<res.resultdata.length; i++) {
+                        res.resultdata[i].level = 0
+                    }
+                    let queue = res.resultdata.slice()
+                    while (queue.length > 0) {
+                        let item = queue.shift()
+                        // 绘制
+                        var classstr = `
+                            <div id="addmaterial_ontology_`+item.id.toString()+`" class="padding-10-3" style="margin-left: `+(item.level*20).toString()+`px">
+                                `+ item.name +`
+                            </div>
+                        `
+                        $(classstr).appendTo(container)
+                        if (item.children && item.children.length > 0) {
+                            for (var j=0; j<item.children.length; j++) {
+                                item.children[item.children.length - 1 - j].level = item.level + 1
+                                queue.unshift(item.children[item.children.length - 1 - j])
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                document.getElementById("ontologytree-choose").style.display = "none"
+                document.getElementById("ontologytree-loading").style.display = "none"
+                document.getElementById("ontologytree-content").style.display = "none"
+                document.getElementById("ontologytree-error").style.display = "flex"
+            }
+        }
+    })
+}
+
+function skiptoaddontology() {
+    clickclosepopup()
+    closeadd()
+    setTimeout(function() {
+        domain_clickaddontologyofcategory()
+    }, 100);
+}
+
+function DownloadXLStemplate_addmaterial() {
+    window.open('/template_download/add_material_to_category/xls?categoryid='+addclasses_classid.toString(), '_blank');
+}

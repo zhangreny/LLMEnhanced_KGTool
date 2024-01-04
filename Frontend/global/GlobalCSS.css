@@ -325,6 +325,9 @@ input[readonly]:focus {
 .paddingbottom-20 {
     padding-bottom: 20px;
 }
+.padding-10-3 {
+    padding: 3px 10px 3px 10px;
+}
 .padding-10-5 {
     padding: 5px 10px 5px 10px;
 }

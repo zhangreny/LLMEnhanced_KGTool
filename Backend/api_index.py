@@ -1,12 +1,17 @@
 # 127.0.0.1:6888/index
 import json
+import pandas as pd
+import os
+import atexit
 
+from datetime import datetime
 from flask import Blueprint
 from flask import request
 from flask import send_file
 from flask import current_app
 from neo4j import GraphDatabase
 from copy import deepcopy
+from hashlib import sha256
 
 api_index = Blueprint("api_index", __name__, static_folder="../Frontend")
 
@@ -108,6 +113,12 @@ def api_createnewdimensionofdomain():
     try:
         id = request.form["id"]
         newdimension = request.form["newdimension"]
+        metakeys = request.form["metakeys"].split("\n")
+        metakeys_after = []
+        for i in range(len(metakeys)):
+            tmp = metakeys[i].rstrip("\r")
+            if tmp != "":
+                metakeys_after.append(tmp)
         try:
             description = request.form["description"]
         except:
@@ -123,7 +134,8 @@ def api_createnewdimensionofdomain():
             "domain": domainname,
             "dimension": newdimension,
             "维度名": newdimension,
-            "维度描述": description
+            "维度描述": description,
+            "维度素材元数据键": str(metakeys_after)
         }
         with driver.session() as session:
             tx = session.begin_transaction()
@@ -575,3 +587,113 @@ def api_uploadontologytoclass():
         print("[An Error Occurred]: " + str(e))
         print("===========================")
         return json.dumps({"status": "fail", "resultdata": str(e)})
+    
+@api_index.route("/api/getontologiesofcategory", methods=["POST"], strict_slashes=False)
+def api_getontologiesofcategory():
+    categoryid = request.form["categoryid"]
+    driver = current_app.config["Neo4j_Driver"]
+    try:
+        with driver.session() as session:
+            session.run("MATCH (x) RETURN x limit 1")
+    except Exception as e:
+        print("#=========================#")
+        print("[An Error Occurred]: " + str(e))
+        print("===========================")
+        return json.dumps({"status": "fail", "resultdata": "数据库连接失败"})
+    res = {}
+    res["nodes"] = []
+    res["links"] = []
+    try:
+        with driver.session() as session:
+            dimensionnode = list(session.run("MATCH (n) where id(n)=" + categoryid + " return n.name as Name, labels(n) as Label, id(n) as Id"))[0]
+        node = {}
+        node["name"] = dimensionnode["Name"]
+        node["id"] = dimensionnode["Id"]
+        node["label"] = dimensionnode["Label"][0]
+        node["title"] = dimensionnode["Name"]
+        node["children"] = []
+        tree = node
+        queue = [[dimensionnode["Id"], []]]  # 初始节点的ID，初始节点的children树无需寻找为空
+        with driver.session() as session:
+            while queue:
+                currentpop = queue.pop(0)
+                current_id, current_treepath = currentpop[0], currentpop[1]
+                result = list(session.run("MATCH (m)-[:本体子项]->(n) WHERE ID(m)=" + str(current_id)+ " return n.name as Name, labels(n) as Label, id(n) as Id"))
+                for i in range(len(result)):
+                    record = result[i]
+                    node = {}
+                    node["name"] = record["Name"]
+                    node["id"] = record["Id"]
+                    node["label"] = record["Label"][0]
+                    node["title"] = record["Name"]
+                    node["children"] = []
+                    current_treeroot = tree
+                    for j in range(len(current_treepath)):
+                        current_treeroot = current_treeroot["children"][current_treepath[j]]
+                    current_treeroot["children"].append(node)
+                    copied_current_treepath = deepcopy(current_treepath + [i])
+                    queue.append([record["Id"], copied_current_treepath])
+        res = []
+        res.append(tree)
+        return json.dumps({"status": "success", "resultdata": res[0]["children"]})
+    except Exception as e:
+        print("#=========================#")
+        print("[An Error Occurred]: " + str(e))
+        print("===========================")
+        return json.dumps({"status": "fail", "resultdata": "获取维度分类失败"}) 
+
+def delete_temp_file(filepath):
+    if os.path.exists(filepath):
+        os.remove(filepath)
+@api_index.route('/template_download/add_material_to_category/xls')
+def template_download_add_material_to_category_xls():
+    categoryid = request.args.get('categoryid')
+    # 获取本体结构，生成文件
+    driver = current_app.config["Neo4j_Driver"]
+    try:
+        with driver.session() as session:
+            session.run("MATCH (x) RETURN x limit 1")
+    except Exception as e:
+        print("#=========================#")
+        print("[An Error Occurred]: " + str(e))
+        print("===========================")
+        return json.dumps({"status": "fail", "resultdata": "数据库连接失败"})
+    columns = []
+    datas = []
+    try:
+        with driver.session() as session:
+            dimensionnode = list(session.run("MATCH (n) where id(n)=" + categoryid + " return n.name as Name, labels(n) as Label, id(n) as Id, n.dimension as Dimension, n.domain as Domain"))[0]
+        queue = [dimensionnode]  # 初始节点的ID，初始节点的children树无需寻找为空
+        with driver.session() as session:
+            metakeys = eval(list(session.run("MATCH (n:维度名) where n.domain='" + dimensionnode["Domain"] + "' return properties(n) as Properties"))[0]["Properties"]["维度素材元数据键"])
+        columns.append("=====================素材元数据=====================")
+        datas.append("=====请输入对应信息=====")
+        for i in range(len(metakeys)):
+            columns.append(metakeys[i])
+            datas.append("")
+        columns.append("=====================素材本体分类和属性=====================")
+        datas.append("=====本体属性要求值=====")
+        with driver.session() as session:
+            while queue:
+                record = queue.pop(0)
+                if record["Label"][0] == "本体属性":
+                    properties = eval(record["Properties"]["本体属性"])
+                    columns.append(properties["本体属性名"])
+                    datas.append(properties["属性值要求"])
+                elif record["Label"][0] == "本体分类":
+                    properties = eval(record["Properties"]["本体属性"])
+                    columns.append(properties["本体分类名"])
+                    datas.append("本体分类，无需填写")
+                result = list(session.run("MATCH (m)-[:本体子项]->(n) WHERE ID(m)=" + str(record["Id"])+ " return n.name as Name, labels(n) as Label, id(n) as Id, properties(n) as Properties"))
+                for i in range(len(result)):
+                    queue.insert(0, result[len(result) - 1 - i])
+    except Exception as e:
+        print("#=========================#")
+        print("[An Error Occurred]: " + str(e))
+        print("===========================")
+        return json.dumps({"status": "fail", "resultdata": "导出分类文件失败"}) 
+    # 把生成的本体文件返回给他
+    filepath = sha256(str(datetime.now()).split(".")[0].encode('utf-8')).hexdigest() 
+    df = pd.DataFrame(list(zip(columns, datas)),columns=None)
+    df.to_excel('../tmp/'+filepath+'.xls', index=False, header=False)
+    return send_file('../tmp/'+filepath+'.xls', as_attachment=True)
