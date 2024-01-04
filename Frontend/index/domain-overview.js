@@ -150,6 +150,12 @@ function GetrelatedGraph(id) {
 }
 
 function drawgraphfromjson(divid, nodesandlinks) {
+    const noderadiuses = [60,48,36,24,12]
+    const linkswidth = [13,10,7,4,1]
+    const linkscolor = ["#181818","#484848","#787878","#a8a8a8","#d8d8d8"]
+    const testymove = [20,15,10,5,0]
+    const textsizes = [24,20,16,12,8]
+    
     const tulicontainer = $("div#domain-graph-tuli").empty() // 清除图例
     $('<div>图例</div><div id="domain-graph-tuli-container"></div>').appendTo(tulicontainer)
     var alllabels = []
@@ -202,7 +208,12 @@ function drawgraphfromjson(divid, nodesandlinks) {
         .data(links)
         .enter()
         .append("path")
-        .attr("class", "domain-link")
+        .style("stroke", function (d) {
+            return linkscolor[d.level]
+        })
+        .style("stroke-width", function (d) {
+            return linkswidth[d.level].toString() + "px"
+        })
         .attr("marker-end", "url(#direction)")
         .attr("id", d => divid + d.source.id + "_" + d.relaname + "_" + d.target.id)
 
@@ -242,7 +253,7 @@ function drawgraphfromjson(divid, nodesandlinks) {
         .data(links)
         .enter()
         .append("text")
-        .attr("dy", "-2")
+        .style("background-color", "#fff")
         .attr("class", "domain-relaname")
         .append('textPath')
         .attr(
@@ -263,7 +274,7 @@ function drawgraphfromjson(divid, nodesandlinks) {
         .append("circle")
         .attr("class", "domain-node")
         .attr("r", function (d) {
-            return 5+8*(5-d.level)
+            return noderadiuses[d.level]
         })
         .attr("id", d => divid + "Node" + d.id.toString())
         .attr("fill", function (d) {return colors(alllabels.indexOf(d.label))})

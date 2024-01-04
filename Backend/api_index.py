@@ -295,6 +295,7 @@ def api_getdomaingraph():
             relation['relaname'] = record['relatype']
             relation['source'] = record["Id"]
             relation['target'] = domainid
+            relation["level"] = 0
             if relation not in res["links"]:
                 res['links'].append(relation)
             node = record["Properties"]
@@ -327,6 +328,7 @@ def api_getdomaingraph():
                         relation['relaname'] = record['relatype']
                         relation['source'] = current_id
                         relation['target'] = record["Id"]
+                        relation["level"] = j+1
                         if relation not in res["links"]:
                             res['links'].append(relation)
                         node = record["Properties"]
