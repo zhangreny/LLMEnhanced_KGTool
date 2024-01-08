@@ -55,6 +55,7 @@ function GetDomainGraph() {
 }
 
 // 获取领域树状结构
+var currentnodeid = -1
 function GetDomainTree() {
     var formFile = new FormData()
     formFile.append("domainid", currentdomainid)
@@ -77,17 +78,33 @@ function GetDomainTree() {
             }
             else if(res.status == "success") {
                 currentnodeid = -1
-                const container = $("div#domain-tree").empty()
+                var container = $("div#domain-tree").empty()
                 sessionStorage.setItem("domaintreejson", JSON.stringify(res.resultdata))
                 res.resultdata[0].level = 0
                 let queue = res.resultdata.slice()
                 addclasses_classid = -1
+                const fatherids = []
                 while (queue.length > 0) {
                     let item = queue.shift()
+                    // 找到根节点
+                    if (item.level == 0) {
+                        container = document.getElementById("domain-tree")
+                    } else {
+                        container = document.getElementById("domain_tree_"+fatherids[item.level-1].toString())
+                    }
+                    // 添加小三角
+                    if (container.getElementsByTagName("img").length == 0) {
+                        $(`
+                            <img src="/static/global/images/right.png" class="img-10 transform-90 marginright-5">
+                        `).prependTo(container.getElementsByTagName("span")[0])
+                    }
                     // 绘制
                     var classstr = `
-                        <div id="domain_tree_`+item.id.toString()+`" onclick="domaintree_click(`+item.id.toString()+`, '`+item.name+`')" class="borderradius-6 padding-10-5 cursor-pointer hover-bg-darkyellow" style="margin-left: `+(item.level*24).toString()+`px">
-                            `+ item.name +`
+                        <div id="domain_tree_`+item.id.toString()+`" class="flex-column" style="margin-left: 20px">
+                            <div onclick="domaintree_click(`+item.id.toString()+`, '`+item.name+`')" class="flex-row align-items borderradius-6 padding-10-5 hover-bg-darkyellow cursor-pointer" style="line-height:16px">
+                                <span onclick="ExpandandCollpaseSubclass(event, `+item.id.toString()+`)" class="flex-row align-center justify-center" style="width:15px">
+                                </span>`+ item.name +`
+                            </div>
                         </div>
                     `
                     $(classstr).appendTo(container)
@@ -97,6 +114,11 @@ function GetDomainTree() {
                             queue.unshift(item.children[item.children.length - 1 - j])
                         }
                     }
+                    if (item.level >= fatherids.length) {
+                        fatherids.push(item.id)
+                    } else {
+                        fatherids[item.level] = item.id
+                    }
                 }
                 domaintree_click(res.resultdata[0].id, res.resultdata[0].name)
             }
@@ -104,13 +126,41 @@ function GetDomainTree() {
     })
 }
 
+function ExpandandCollpaseSubclass(event, id) {
+    event.stopPropagation()
+    const container = document.getElementById("domain_tree_"+id.toString())
+    const img = container.firstElementChild.getElementsByTagName("img")[0]
+    if (img.classList.contains("transform-90")) {
+        img.classList.remove("transform-90")
+        const sons = container.querySelectorAll(":scope > div")
+        for (var j=1; j<sons.length; j++){
+            sons[j].style.display = "none"
+        }
+    }
+    else {
+        img.classList.add("transform-90")
+        const sons = container.querySelectorAll(":scope > div")
+        for (var j=1; j<sons.length; j++){
+            sons[j].style.display = "flex"
+        }
+    }
+}
+
 function domaintree_click(id, name) {
     if (currentnodeid != -1) {
-        document.getElementById("domain_tree_"+currentnodeid.toString()).classList.remove("chosen-darkgreen")
-        document.getElementById("domain_tree_"+currentnodeid.toString()).classList.add("hover-bg-darkyellow")
+        document.getElementById("domain_tree_"+currentnodeid.toString()).firstElementChild.classList.remove("chosen-darkgreen")
+        document.getElementById("domain_tree_"+currentnodeid.toString()).firstElementChild.classList.add("hover-bg-darkyellow")
+        const imgs = document.getElementById("domain_tree_"+currentnodeid.toString()).firstElementChild.getElementsByTagName("img")
+        if (imgs.length > 0) {
+            imgs[0].src = "/static/global/images/right.png"
+        }
     }
-    document.getElementById("domain_tree_"+id.toString()).classList.remove("hover-bg-darkyellow")
-    document.getElementById("domain_tree_"+id.toString()).classList.add("chosen-darkgreen")
+    document.getElementById("domain_tree_"+id.toString()).firstElementChild.classList.remove("hover-bg-darkyellow")
+    document.getElementById("domain_tree_"+id.toString()).firstElementChild.classList.add("chosen-darkgreen")
+    const imgs = document.getElementById("domain_tree_"+id.toString()).firstElementChild.getElementsByTagName("img")
+    if (imgs.length > 0) {
+        imgs[0].src = "/static/global/images/right-white.png"
+    }
     GetrelatedGraph(id)
     currentnodeid = id
 }
@@ -138,7 +188,6 @@ function GetrelatedGraph(id) {
                 document.getElementById("domain-graph-error").style.display = "flex"
             }
             else if(res.status == "success") {
-                console.log(res.resultdata)
                 sessionStorage.setItem("domaingraphjson", res.resultdata)
                 document.getElementById("domain-graph-loading").style.display = "none"
                 document.getElementById("domain-graph-error").style.display = "none"
@@ -149,13 +198,26 @@ function GetrelatedGraph(id) {
     })
 }
 
+function hexToRgba(hex, opacity) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    
+    if (result) {
+      const r = parseInt(result[1], 16);
+      const g = parseInt(result[2], 16);
+      const b = parseInt(result[3], 16);
+  
+      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    } else {
+      throw new Error('Invalid hexadecimal color format');
+    }
+  }
 function drawgraphfromjson(divid, nodesandlinks) {
     const noderadiuses = [60,48,36,24,12]
     const linkswidth = [10,8,6,4,2]
-    const linkscolor = ["#a8a8a8","#b8b8b8","#c8c8c8","#d8d8d8","#e8e8e8"]
-    const testymove = [58,46,30,16,4]
+    const linktextcolor = ["#686868","#787878","#888888","#989898","#a8a8a8"]
+    const testymove = [60,48,36,24,12]
     const textsizes = [24,20,16,12,8]
-    const relatextsizes = [14,12,10,8,6]
+    const relatextsizes = [12,10,8,6,4]
     const relatextdy = [-4,-3,-2,-1,0]
     
     const tulicontainer = $("div#domain-graph-tuli").empty() // 清除图例
@@ -202,7 +264,7 @@ function drawgraphfromjson(divid, nodesandlinks) {
     simulation.force("x", d3.forceX().strength(0.1))
     simulation.force("y", d3.forceY().strength(0.25))
     simulation.alphaDecay(0.2)
-    simulation.force("collide", d3.forceCollide().radius(70))
+    simulation.force("collide", d3.forceCollide().radius(82))
     simulation.tick(25)
 
     // 边长
@@ -211,7 +273,7 @@ function drawgraphfromjson(divid, nodesandlinks) {
         .enter()
         .append("path")
         .style("stroke", function (d) {
-            return linkscolor[d.level]
+            return hexToRgba(colors(alllabels.indexOf(d.source.label)), 0.25)
         })
         .style("stroke-width", function (d) {
             return linkswidth[d.level].toString() + "px"
@@ -255,7 +317,6 @@ function drawgraphfromjson(divid, nodesandlinks) {
         .data(links)
         .enter()
         .append("text")
-        .style("background-color", "#fff")
         .attr("class", "domain-relaname")
         .append('textPath')
         .attr(
@@ -273,6 +334,9 @@ function drawgraphfromjson(divid, nodesandlinks) {
         })
         .attr("dy", function(d) {
             return relatextdy[d.level]
+        })
+        .style("fill", function (d) {
+            return linktextcolor[d.level]
         })
     
     // 节点
@@ -331,6 +395,15 @@ function drawgraphfromjson(divid, nodesandlinks) {
                 return "M " + d.target.x + " " + d.target.y + " L " + d.source.x + " " + d.source.y
             }
         })
+        relanametest.attr("startOffset", function (d) {
+            if (d.source.x < d.target.x) {
+                return "calc(50% + 6px)"
+            }
+            else {
+                return "calc(50% - 6px)"
+            }
+        })
+        /*
             .attr("marker-end", function (d) {
                 if (d.source.x < d.target.x) {
                     return "url(#positiveMarker)"
@@ -347,6 +420,7 @@ function drawgraphfromjson(divid, nodesandlinks) {
                     return "url(#negativeMarker)"
                 }
             })
+        */
         node
             .attr("transform", d => `translate(${d.x},${d.y})`);
         nodetest
@@ -368,16 +442,18 @@ function drawgraphfromjson(divid, nodesandlinks) {
         .attr("class", "flex-row align-center justify-center color-darkgrey fontweight-600")
         .style("width", "100%")
         .style("height", "100%")
+        .style("line-height", "100%")
         .style("font-size", function(d) {
             return textsizes[d.level].toString() + "px"
         })
         .style("padding", "3px")
         .style("overflow-wrap", "break-word")
         .style("word-break", "break-all")
-        .style("text-align", "middle")
+        .style("text-align", "center")
         .style("overflow", "hidden")
         .style("text-overflow", "ellipsis")
         .style("white-space", "nowrap")
+        .style("display", "inline-block")
         .text(function (d) {
             return d.name
         })

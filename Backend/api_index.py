@@ -467,6 +467,7 @@ def api_getalltreesofdomain():
     res = {}
     res["nodes"] = []
     res["links"] = []
+    allowedlabels = ["领域名", "维度名", "维度分类"]
     try:
         with driver.session() as session:
             domainnode = list(session.run("MATCH (n:领域名) where id(n)=" + domainid + " return n.name as Name, labels(n) as Label, id(n) as Id"))[0]
@@ -485,18 +486,19 @@ def api_getalltreesofdomain():
                 result = list(session.run("MATCH (m)-[r]->(n) WHERE ID(m)=" + str(current_id)+ " return n.name as Name, labels(n) as Label, id(n) as Id"))
                 for i in range(len(result)):
                     record = result[i]
-                    node = {}
-                    node["name"] = record["Name"]
-                    node["id"] = record["Id"]
-                    node["label"] = record["Label"][0]
-                    node["title"] = record["Name"]
-                    node["children"] = []
-                    current_treeroot = tree
-                    for j in range(len(current_treepath)):
-                        current_treeroot = current_treeroot["children"][current_treepath[j]]
-                    current_treeroot["children"].append(node)
-                    copied_current_treepath = deepcopy(current_treepath + [i])
-                    queue.append([record["Id"], copied_current_treepath])
+                    if record["Label"][0] in allowedlabels:
+                        node = {}
+                        node["name"] = record["Name"]
+                        node["id"] = record["Id"]
+                        node["label"] = record["Label"][0]
+                        node["title"] = record["Name"]
+                        node["children"] = []
+                        current_treeroot = tree
+                        for j in range(len(current_treepath)):
+                            current_treeroot = current_treeroot["children"][current_treepath[j]]
+                        current_treeroot["children"].append(node)
+                        copied_current_treepath = deepcopy(current_treepath + [i])
+                        queue.append([record["Id"], copied_current_treepath])
         res = []
         res.append(tree)
         return json.dumps({"status": "success", "resultdata": res})
