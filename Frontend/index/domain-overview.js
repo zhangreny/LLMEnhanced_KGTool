@@ -151,10 +151,12 @@ function GetrelatedGraph(id) {
 
 function drawgraphfromjson(divid, nodesandlinks) {
     const noderadiuses = [60,48,36,24,12]
-    const linkswidth = [13,10,7,4,1]
-    const linkscolor = ["#181818","#484848","#787878","#a8a8a8","#d8d8d8"]
-    const testymove = [20,15,10,5,0]
+    const linkswidth = [10,8,6,4,2]
+    const linkscolor = ["#a8a8a8","#b8b8b8","#c8c8c8","#d8d8d8","#e8e8e8"]
+    const testymove = [58,46,30,16,4]
     const textsizes = [24,20,16,12,8]
+    const relatextsizes = [14,12,10,8,6]
+    const relatextdy = [-4,-3,-2,-1,0]
     
     const tulicontainer = $("div#domain-graph-tuli").empty() // 清除图例
     $('<div>图例</div><div id="domain-graph-tuli-container"></div>').appendTo(tulicontainer)
@@ -266,6 +268,12 @@ function drawgraphfromjson(divid, nodesandlinks) {
             }
             return d.relaname
         })
+        .style("font-size", function(d) {
+            return relatextsizes[d.level].toString() + "px"
+        })
+        .attr("dy", function(d) {
+            return relatextdy[d.level]
+        })
     
     // 节点
     const node = g.append("g").selectAll(".domain-node")
@@ -350,15 +358,19 @@ function drawgraphfromjson(divid, nodesandlinks) {
         .append("foreignObject")
         .attr("class", "cursor-pointer")
         .style("pointer-events", "none")
-        .attr("x", -15)
-        .attr("y", -15)
-        .attr("width", 30)
+        .attr("x", -80)
+        .attr("y", function(d) {
+            return testymove[d.level]
+        })
+        .attr("width", 160)
         .attr("height", 30)
         .append("xhtml:div")
-        .attr("class", "flex-row align-center justify-center color-white")
+        .attr("class", "flex-row align-center justify-center color-darkgrey fontweight-600")
         .style("width", "100%")
         .style("height", "100%")
-        .style("font-size", "8px")
+        .style("font-size", function(d) {
+            return textsizes[d.level].toString() + "px"
+        })
         .style("padding", "3px")
         .style("overflow-wrap", "break-word")
         .style("word-break", "break-all")
@@ -367,9 +379,6 @@ function drawgraphfromjson(divid, nodesandlinks) {
         .style("text-overflow", "ellipsis")
         .style("white-space", "nowrap")
         .text(function (d) {
-            if (d.name.length > 3) {
-                return d.name.slice(0, 3) + "..."
-            }
             return d.name
         })
 }
