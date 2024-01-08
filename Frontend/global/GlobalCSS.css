@@ -459,6 +459,14 @@ input[readonly]:focus {
 }
 
 /* ============= 图片大小 ============= */
+.img-6 {
+    width: 6px;
+    height: 6px;
+}
+.img-8 {
+    width: 8px;
+    height: 8px;
+}
 .img-10 {
     width: 10px;
     height: 10px;

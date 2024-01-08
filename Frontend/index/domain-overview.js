@@ -95,13 +95,13 @@ function GetDomainTree() {
                     // 添加小三角
                     if (container.getElementsByTagName("img").length == 0) {
                         $(`
-                            <img src="/static/global/images/right.png" class="img-10 transform-90 marginright-5">
+                            <img src="/static/global/images/right.png" class="img-8 transform-90 marginright-5">
                         `).prependTo(container.getElementsByTagName("span")[0])
                     }
                     // 绘制
                     var classstr = `
                         <div id="domain_tree_`+item.id.toString()+`" class="flex-column" style="margin-left: 20px">
-                            <div onclick="domaintree_click(`+item.id.toString()+`, '`+item.name+`')" class="flex-row align-items borderradius-6 padding-10-5 hover-bg-darkyellow cursor-pointer" style="line-height:16px">
+                            <div onclick="domaintree_click(`+item.id.toString()+`, '`+item.name+`')" class="flex-row align-center borderradius-6 padding-10-5 hover-bg-darkyellow cursor-pointer" style="line-height:16px">
                                 <span onclick="ExpandandCollpaseSubclass(event, `+item.id.toString()+`)" class="flex-row align-center justify-center" style="width:15px">
                                 </span>`+ item.name +`
                             </div>
@@ -264,7 +264,7 @@ function drawgraphfromjson(divid, nodesandlinks) {
     simulation.force("x", d3.forceX().strength(0.1))
     simulation.force("y", d3.forceY().strength(0.25))
     simulation.alphaDecay(0.2)
-    simulation.force("collide", d3.forceCollide().radius(82))
+    simulation.force("collide", d3.forceCollide().radius(80))
     simulation.tick(25)
 
     // 边长

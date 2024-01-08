@@ -239,7 +239,7 @@ function domain_clickcategoryofdimension() {
     const container = $("div#popup").empty()
     document.getElementById("popup").style.display = "flex"
     const adddomain = `
-    <div id="popupcontainer-addcategory" class="borderradius-6 padding-25 bg-white flex-column" style="width: 700px;padding-left:30px;padding-bottom:10px">
+    <div id="popupcontainer-addcategory" class="borderradius-6 padding-25 bg-white flex-column" style="width: 820px;padding-left:30px;padding-bottom:10px">
         <!-- 标题和关闭按钮 -->
         <div class="width-100per flex-row align-center justify-between marginbottom-10">
             <span class="fontsize-20 fontweight-600">维度下添加知识分类</span>
@@ -276,7 +276,7 @@ function domain_clickcategoryofdimension() {
                     选择知识分类添加位置
                 </div>
                 <!-- 内容-输入框 -->
-                <div id="popup-domain-adddimension-dimensiontree" class="margintop-5 padding-10 borderradius-6 border-lightgrey overflow-auto" style="width: calc(100% - 5px);height:250px">
+                <div id="popup-domain-adddimension-dimensiontree" class="margintop-5 padding-5 borderradius-6 border-lightgrey overflow-auto" style="width: calc(100% - 5px);height:250px">
                     <div id="dimensiontree-choose" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;">
                         请选择维度
                     </div>
@@ -287,7 +287,7 @@ function domain_clickcategoryofdimension() {
                     <div id="dimensiontree-error" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;display:none">
                         <span class="fontsize-16 marginleft-10 fontweight-600" style="color: #d81e06;">[ERROR] 获取数据失败</span>
                     </div>
-                    <div id="dimensiontree-content" class="width-100per height-100per flex-column fontsize-14" style="color: #4b4b4b;display:none">
+                    <div id="dimensiontree-content" class="height-100per flex-column fontsize-14" style="color: #4b4b4b;display:none; width:calc(100% + 20px); margin-left:-20px">
                         
                     </div>
                 </div>
@@ -375,7 +375,7 @@ function addcategory_choosedimension(dimensionname, dimensionid) {
         contentType: false,
         success: function (res) {
             if(res.status == "success"){
-                const container = $("div#dimensiontree-content").empty()
+                var container = $("div#dimensiontree-content").empty()
                 document.getElementById("dimensiontree-choose").style.display = "none"
                 document.getElementById("dimensiontree-error").style.display = "none"
                 document.getElementById("dimensiontree-loading").style.display = "none"
@@ -383,12 +383,28 @@ function addcategory_choosedimension(dimensionname, dimensionid) {
                 res.resultdata[0].level = 0
                 let queue = res.resultdata.slice()
                 addclasses_classid = -1
+                const fatherids = []
                 while (queue.length > 0) {
                     let item = queue.shift()
+                    // 找到根节点
+                    if (item.level == 0) {
+                        container = document.getElementById("dimensiontree-content")
+                    } else {
+                        container = document.getElementById("addclass_class_"+fatherids[item.level-1].toString())
+                    }
+                    // 添加小三角
+                    if (container.getElementsByTagName("img").length == 0) {
+                        $(`
+                            <img src="/static/global/images/right.png" class="img-8 transform-90 marginright-5">
+                        `).prependTo(container.getElementsByTagName("span")[0])
+                    }
                     // 绘制
                     var classstr = `
-                        <div id="addclass_class_`+item.id.toString()+`" onclick="dimensiontree_clickclass(`+item.id.toString()+`, '`+item.name+`')" class="padding-10-5 cursor-pointer hover-bg-lightgrey" style="margin-left: `+(item.level*24).toString()+`px">
-                            `+ item.name +`
+                        <div id="addclass_class_`+item.id.toString()+`" class="flex-column" style="margin-left: 20px">
+                            <div onclick="dimensiontree_clickclass(`+item.id.toString()+`, '`+item.name+`')" class="flex-row align-center padding-10-5 cursor-pointer hover-bg-lightgrey" style="line-height:16px">
+                                <span onclick="ExpandandCollpaseSubclass_addcategory(event, `+item.id.toString()+`)" class="flex-row align-center justify-center" style="width:15px">
+                                </span>`+ item.name +`
+                            </div>
                         </div>
                     `
                     $(classstr).appendTo(container)
@@ -398,8 +414,13 @@ function addcategory_choosedimension(dimensionname, dimensionid) {
                             queue.unshift(item.children[item.children.length - 1 - j])
                         }
                     }
+                    if (item.level >= fatherids.length) {
+                        fatherids.push(item.id)
+                    } else {
+                        fatherids[item.level] = item.id
+                    }
                 }
-                document.getElementById("dimensiontree-content").getElementsByTagName("div")[0].click()
+                document.getElementById("dimensiontree-content").firstElementChild.querySelectorAll(":scope > div")[0].click()
             }
             else {
                 document.getElementById("dimensiontree-choose").style.display = "none"
@@ -412,13 +433,33 @@ function addcategory_choosedimension(dimensionname, dimensionid) {
     })
 }
 
+function ExpandandCollpaseSubclass_addcategory(event, id) {
+    event.stopPropagation()
+    const container = document.getElementById("addclass_class_"+id.toString())
+    const img = container.firstElementChild.getElementsByTagName("img")[0]
+    if (img.classList.contains("transform-90")) {
+        img.classList.remove("transform-90")
+        const sons = container.querySelectorAll(":scope > div")
+        for (var j=1; j<sons.length; j++){
+            sons[j].style.display = "none"
+        }
+    }
+    else {
+        img.classList.add("transform-90")
+        const sons = container.querySelectorAll(":scope > div")
+        for (var j=1; j<sons.length; j++){
+            sons[j].style.display = "flex"
+        }
+    }
+}
+
 function dimensiontree_clickclass(id, classname) {
     if (addclasses_classid != -1) {
-        document.getElementById("addclass_class_"+addclasses_classid.toString()).classList.remove("chosen-lightblue")
-        document.getElementById("addclass_class_"+addclasses_classid.toString()).classList.add("hover-bg-lightgrey")
+        document.getElementById("addclass_class_"+addclasses_classid.toString()).firstElementChild.classList.remove("chosen-lightblue")
+        document.getElementById("addclass_class_"+addclasses_classid.toString()).firstElementChild.classList.add("hover-bg-lightgrey")
     }
-    document.getElementById("addclass_class_"+id.toString()).classList.remove("hover-bg-lightgrey")
-    document.getElementById("addclass_class_"+id.toString()).classList.add("chosen-lightblue")
+    document.getElementById("addclass_class_"+id.toString()).firstElementChild.classList.remove("hover-bg-lightgrey")
+    document.getElementById("addclass_class_"+id.toString()).firstElementChild.classList.add("chosen-lightblue")
     addclasses_classid = id
     document.getElementById("addclass_chosenclassname").innerHTML = classname
 }
@@ -503,7 +544,7 @@ function domain_clickaddontologyofcategory() {
     const container = $("div#popup").empty()
     document.getElementById("popup").style.display = "flex"
     const adddomain = `
-    <div id="popupcontainer-addcategory" class="borderradius-6 padding-25 bg-white flex-column" style="width: 700px;padding-left:30px;padding-bottom:10px">
+    <div id="popupcontainer-addcategory" class="borderradius-6 padding-25 bg-white flex-column" style="width: 820px;padding-left:30px;padding-bottom:10px">
         <!-- 标题和关闭按钮 -->
         <div class="width-100per flex-row align-center justify-between marginbottom-10">
             <span class="fontsize-20 fontweight-600">为知识分类创建本体</span>
@@ -540,7 +581,7 @@ function domain_clickaddontologyofcategory() {
                     选择添加本体的知识分类
                 </div>
                 <!-- 内容-输入框 -->
-                <div id="popup-domain-adddimension-dimensiontree" class="margintop-5 padding-10 borderradius-6 border-lightgrey overflow-auto" style="width: calc(100% - 5px);height:250px">
+                <div id="popup-domain-adddimension-dimensiontree" class="margintop-5 padding-5 borderradius-6 border-lightgrey overflow-auto" style="width: calc(100% - 5px);height:250px">
                     <div id="dimensiontree-choose" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;">
                         请选择维度
                     </div>
@@ -551,7 +592,7 @@ function domain_clickaddontologyofcategory() {
                     <div id="dimensiontree-error" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;display:none">
                         <span class="fontsize-16 marginleft-10 fontweight-600" style="color: #d81e06;">[ERROR] 获取数据失败</span>
                     </div>
-                    <div id="dimensiontree-content" class="width-100per height-100per flex-column fontsize-14" style="color: #4b4b4b;display:none">
+                    <div id="dimensiontree-content" class="height-100per flex-column fontsize-14" style="color: #4b4b4b;display:none;margin-left:-20px;width: calc(100% + 20px)">
                         
                     </div>
                 </div>
@@ -701,7 +742,7 @@ function domain_clickaddmaterialaccordingtoontology() {
                     选择知识分类
                 </div>
                 <!-- 内容-输入框 -->
-                <div id="popup-domain-adddimension-dimensiontree" class="margintop-5 padding-10 borderradius-6 border-lightgrey overflow-auto" style="width: calc(100% - 5px);height:250px">
+                <div id="popup-domain-adddimension-dimensiontree" class="margintop-5 padding-5 borderradius-6 border-lightgrey overflow-auto" style="width: calc(100% - 5px);height:250px">
                     <div id="dimensiontree-choose" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;">
                         请选择维度
                     </div>
@@ -712,7 +753,7 @@ function domain_clickaddmaterialaccordingtoontology() {
                     <div id="dimensiontree-error" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;display:none">
                         <span class="fontsize-16 marginleft-10 fontweight-600" style="color: #d81e06;">[ERROR] 获取数据失败</span>
                     </div>
-                    <div id="dimensiontree-content" class="width-100per height-100per flex-column fontsize-14" style="color: #4b4b4b;display:none">
+                    <div id="dimensiontree-content" class="width-100per height-100per flex-column fontsize-14" style="color: #4b4b4b;display:none;margin-left:-20px;width:calc(100% + 20px)">
                         
                     </div>
                 </div>
@@ -722,7 +763,7 @@ function domain_clickaddmaterialaccordingtoontology() {
                     知识分类本体展示
                 </div>
                 <!-- 内容-输入框 -->
-                <div id="popup-domain-addmaterial-ontologytree" class="margintop-5 padding-10 borderradius-6 border-lightgrey overflow-auto" style="width: calc(100% - 5px);height:250px">
+                <div id="popup-domain-addmaterial-ontologytree" class="margintop-5 padding-5 borderradius-6 border-lightgrey overflow-auto" style="width: calc(100% - 5px);height:250px">
                     <div id="ontologytree-choose" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;">
                         请选择知识分类
                     </div>
@@ -733,7 +774,7 @@ function domain_clickaddmaterialaccordingtoontology() {
                     <div id="ontologytree-error" class="width-100per height-100per flex-row justify-center align-center fontsize-16 fontweight-600" style="color: #4b4b4b;display:none">
                         <span class="fontsize-16 marginleft-10 fontweight-600" style="color: #d81e06;">[ERROR] 获取数据失败</span>
                     </div>
-                    <div id="ontologytree-content" class="width-100per height-100per flex-column fontsize-12" style="color: #4b4b4b;display:none">
+                    <div id="ontologytree-content" class="height-100per flex-column fontsize-12" style="color: #4b4b4b;display:none;margin-left:-20px;width:calc(100% + 20px)">
                         
                     </div>
                 </div>
@@ -773,7 +814,7 @@ function domain_clickaddmaterialaccordingtoontology() {
             <div id="popup-domain-addcategory-errmsg" class="color-red fontsize-14" style="margin-bottom:6px"></div>
             <div class="flex-row align-center">
                 <img id="popup-domain-addcategory-loading" src="/static/global/images/loading.gif" class="hidden img-18 marginright-10">
-                <button onclick="popup_submit_addontologyofclass()" type="button" class="layui-btn layui-btn-normal" style="width:70px;border-radius:6px;font-weight:600;height:28px;line-height:28px;">
+                <button onclick="popup_submit_addmaterialtocategory()" type="button" class="layui-btn layui-btn-normal" style="width:70px;border-radius:6px;font-weight:600;height:28px;line-height:28px;">
                     保存
                 </button>
             </div>
@@ -832,7 +873,7 @@ function addmaterial_choosedimension(dimensionname, dimensionid) {
         contentType: false,
         success: function (res) {
             if(res.status == "success"){
-                const container = $("div#dimensiontree-content").empty()
+                var container = $("div#dimensiontree-content").empty()
                 document.getElementById("dimensiontree-choose").style.display = "none"
                 document.getElementById("dimensiontree-error").style.display = "none"
                 document.getElementById("dimensiontree-loading").style.display = "none"
@@ -840,12 +881,28 @@ function addmaterial_choosedimension(dimensionname, dimensionid) {
                 res.resultdata[0].level = 0
                 let queue = res.resultdata.slice()
                 addclasses_classid = -1
+                const fatherids = []
                 while (queue.length > 0) {
                     let item = queue.shift()
+                    // 找到根节点
+                    if (item.level == 0) {
+                        container = document.getElementById("dimensiontree-content")
+                    } else {
+                        container = document.getElementById("addclass_class_"+fatherids[item.level-1].toString())
+                    }
+                    // 添加小三角
+                    if (container.getElementsByTagName("img").length == 0) {
+                        $(`
+                            <img src="/static/global/images/right.png" class="img-8 transform-90 marginright-5">
+                        `).prependTo(container.getElementsByTagName("span")[0])
+                    }
                     // 绘制
                     var classstr = `
-                        <div id="addclass_class_`+item.id.toString()+`" onclick="classtree_clickclass(`+item.id.toString()+`, '`+item.name+`')" class="padding-10-5 cursor-pointer hover-bg-lightgrey" style="margin-left: `+(item.level*24).toString()+`px">
-                            `+ item.name +`
+                        <div id="addclass_class_`+item.id.toString()+`" class="flex-column" style="margin-left: 20px">
+                            <div onclick="classtree_clickclass(`+item.id.toString()+`, '`+item.name+`')" class="flex-row align-center padding-10-5 cursor-pointer hover-bg-lightgrey" style="line-height:16px">
+                                <span onclick="ExpandandCollpaseSubclass_addcategory(event, `+item.id.toString()+`)" class="flex-row align-center justify-center" style="width:15px">
+                                </span>`+ item.name +`
+                            </div>
                         </div>
                     `
                     $(classstr).appendTo(container)
@@ -855,8 +912,13 @@ function addmaterial_choosedimension(dimensionname, dimensionid) {
                             queue.unshift(item.children[item.children.length - 1 - j])
                         }
                     }
+                    if (item.level >= fatherids.length) {
+                        fatherids.push(item.id)
+                    } else {
+                        fatherids[item.level] = item.id
+                    }
                 }
-                document.getElementById("dimensiontree-content").getElementsByTagName("div")[0].click()
+                document.getElementById("dimensiontree-content").firstElementChild.querySelectorAll(":scope > div")[0].click()
             }
             else {
                 document.getElementById("dimensiontree-choose").style.display = "none"
@@ -871,11 +933,11 @@ function addmaterial_choosedimension(dimensionname, dimensionid) {
 
 function classtree_clickclass(id, classname) {
     if (addclasses_classid != -1) {
-        document.getElementById("addclass_class_"+addclasses_classid.toString()).classList.remove("chosen-lightblue")
-        document.getElementById("addclass_class_"+addclasses_classid.toString()).classList.add("hover-bg-lightgrey")
+        document.getElementById("addclass_class_"+addclasses_classid.toString()).firstElementChild.classList.remove("chosen-lightblue")
+        document.getElementById("addclass_class_"+addclasses_classid.toString()).firstElementChild.classList.add("hover-bg-lightgrey")
     }
-    document.getElementById("addclass_class_"+id.toString()).classList.remove("hover-bg-lightgrey")
-    document.getElementById("addclass_class_"+id.toString()).classList.add("chosen-lightblue")
+    document.getElementById("addclass_class_"+id.toString()).firstElementChild.classList.remove("hover-bg-lightgrey")
+    document.getElementById("addclass_class_"+id.toString()).firstElementChild.classList.add("chosen-lightblue")
     addclasses_classid = id
     document.getElementById("addclass_chosenclassname").innerHTML = classname
 
@@ -899,7 +961,7 @@ function classtree_clickclass(id, classname) {
         contentType: false,
         success: function (res) {
             if(res.status == "success"){
-                const container = $("div#ontologytree-content").empty()
+                var container = $("div#ontologytree-content").empty()
                 document.getElementById("ontologytree-choose").style.display = "none"
                 document.getElementById("ontologytree-error").style.display = "none"
                 document.getElementById("ontologytree-loading").style.display = "none"
@@ -922,12 +984,28 @@ function classtree_clickclass(id, classname) {
                         res.resultdata[i].level = 0
                     }
                     let queue = res.resultdata.slice()
+                    const fatherids = []
                     while (queue.length > 0) {
                         let item = queue.shift()
+                        // 找到根节点
+                        if (item.level == 0) {
+                            container = document.getElementById("ontologytree-content")
+                        } else {
+                            container = document.getElementById("addmaterial_ontology_"+fatherids[item.level-1].toString())
+                        }
+                        // 添加小三角
+                        if (container.getElementsByTagName("img").length == 0) {
+                            $(`
+                                <img src="/static/global/images/right.png" class="img-6 transform-90 marginright-5">
+                            `).prependTo(container.getElementsByTagName("span")[0])
+                        }
                         // 绘制
                         var classstr = `
-                            <div id="addmaterial_ontology_`+item.id.toString()+`" class="padding-10-3" style="margin-left: `+(item.level*20).toString()+`px">
-                                `+ item.name +`
+                            <div id="addmaterial_ontology_`+item.id.toString()+`" class="flex-column" style="margin-left: 20px">
+                                <div class="flex-row align-center padding-10-3 hover-bg-lightgrey" style="line-height:14px">
+                                    <span onclick="ExpandandCollpaseSubclass_addmaterial(event, `+item.id.toString()+`)" class="flex-row align-center justify-center cursor-pointer" style="width:12px;">
+                                    </span><span style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:800px">`+ item.name +`</span>
+                                </div>
                             </div>
                         `
                         $(classstr).appendTo(container)
@@ -936,6 +1014,11 @@ function classtree_clickclass(id, classname) {
                                 item.children[item.children.length - 1 - j].level = item.level + 1
                                 queue.unshift(item.children[item.children.length - 1 - j])
                             }
+                        }
+                        if (item.level >= fatherids.length) {
+                            fatherids.push(item.id)
+                        } else {
+                            fatherids[item.level] = item.id
                         }
                     }
                 }
@@ -948,6 +1031,26 @@ function classtree_clickclass(id, classname) {
             }
         }
     })
+}
+
+function ExpandandCollpaseSubclass_addmaterial(event, id){
+    event.stopPropagation()
+    const container = document.getElementById("addmaterial_ontology_"+id.toString())
+    const img = container.firstElementChild.getElementsByTagName("img")[0]
+    if (img.classList.contains("transform-90")) {
+        img.classList.remove("transform-90")
+        const sons = container.querySelectorAll(":scope > div")
+        for (var j=1; j<sons.length; j++){
+            sons[j].style.display = "none"
+        }
+    }
+    else {
+        img.classList.add("transform-90")
+        const sons = container.querySelectorAll(":scope > div")
+        for (var j=1; j<sons.length; j++){
+            sons[j].style.display = "flex"
+        }
+    }
 }
 
 function skiptoaddontology() {
