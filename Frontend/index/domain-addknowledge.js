@@ -1064,3 +1064,7 @@ function skiptoaddontology() {
 function DownloadXLStemplate_addmaterial() {
     window.open('/template_download/add_material_to_category/xls?categoryid='+addclasses_classid.toString(), '_blank');
 }
+
+function DownloadXLStutorial_addmaterial() {
+    window.open('/template_download/add_material_to_category/tutorial', '_blank');
+}

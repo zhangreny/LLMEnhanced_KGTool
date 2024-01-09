@@ -667,30 +667,33 @@ def template_download_add_material_to_category_xls():
     try:
         with driver.session() as session:
             dimensionnode = list(session.run("MATCH (n) where id(n)=" + categoryid + " return n.name as Name, labels(n) as Label, id(n) as Id, n.dimension as Dimension, n.domain as Domain"))[0]
-        queue = [dimensionnode]  # 初始节点的ID，初始节点的children树无需寻找为空
+        queue = []
+        queue.append([dimensionnode, -1])
         with driver.session() as session:
             metakeys = eval(list(session.run("MATCH (n:维度名) where n.domain='" + dimensionnode["Domain"] + "' return properties(n) as Properties"))[0]["Properties"]["维度素材元数据键"])
-        columns.append("=====================素材元数据=====================")
-        datas.append("=====请输入对应信息=====")
+        columns.append("========================素材元数据【此列内容不要修改！】=========================")
+        datas.append("=====从第三列开始输入信息【此列内容不要修改！】=====")
         for i in range(len(metakeys)):
             columns.append(metakeys[i])
-            datas.append("")
-        columns.append("=====================素材本体分类和属性=====================")
-        datas.append("=====本体属性要求值=====")
+            datas.append(metakeys[i])
+        columns.append("=====================素材本体分类和属性【此列内容不要修改！】=====================")
+        datas.append("========本体属性要求值【此列内容不要修改！】=======")
         with driver.session() as session:
             while queue:
-                record = queue.pop(0)
+                records = queue.pop(0)
+                record = records[0]
+                oldlevel = records[1]
                 if record["Label"][0] == "本体属性":
                     properties = eval(record["Properties"]["本体属性"])
-                    columns.append(properties["本体属性名"])
+                    columns.append(" "*8*oldlevel + properties["本体属性名"] + "[id="+str(record["Id"])+"]")
                     datas.append(properties["属性值要求"])
                 elif record["Label"][0] == "本体分类":
                     properties = eval(record["Properties"]["本体属性"])
-                    columns.append(properties["本体分类名"])
-                    datas.append("本体分类，无需填写")
+                    columns.append(" "*8*oldlevel + properties["本体分类名"])
+                    datas.append("本体分类，此行无需填写")
                 result = list(session.run("MATCH (m)-[:本体子项]->(n) WHERE ID(m)=" + str(record["Id"])+ " return n.name as Name, labels(n) as Label, id(n) as Id, properties(n) as Properties"))
                 for i in range(len(result)):
-                    queue.insert(0, result[len(result) - 1 - i])
+                    queue.insert(0, [result[len(result) - 1 - i], oldlevel + 1])
     except Exception as e:
         print("#=========================#")
         print("[An Error Occurred]: " + str(e))
@@ -701,3 +704,10 @@ def template_download_add_material_to_category_xls():
     df = pd.DataFrame(list(zip(columns, datas)),columns=None)
     df.to_excel('../tmp/'+filepath+'.xls', index=False, header=False)
     return send_file('../tmp/'+filepath+'.xls', as_attachment=True)
+
+@api_index.route('/template_download/add_material_to_category/tutorial')
+def template_download_add_material_to_category_tutorial():
+    # 文件路径
+    file_path = '../filesfordownload/知识素材表格填写教程.pdf'
+    # 发送文件
+    return send_file(file_path, as_attachment=True)

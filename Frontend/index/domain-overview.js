@@ -57,6 +57,10 @@ function GetDomainGraph() {
 // 获取领域树状结构
 var currentnodeid = -1
 function GetDomainTree() {
+    // 进入loading框
+    document.getElementById("domain-graph-error").style.display = "none"
+    document.getElementById("domain-graph").style.display = "none"
+    document.getElementById("domain-graph-loading").style.display = "flex"
     var formFile = new FormData()
     formFile.append("domainid", currentdomainid)
     var data = formFile;
@@ -70,13 +74,14 @@ function GetDomainTree() {
         contentType: false,
         success: function (res) {
             if(res.status == "fail") {
-                /*
                 document.getElementById("domain-graph-loading").style.display = "none"
                 document.getElementById("domain-graph").style.display = "none"
                 document.getElementById("domain-graph-error").style.display = "flex"
-                */
             }
             else if(res.status == "success") {
+                document.getElementById("domain-graph-loading").style.display = "none"
+                document.getElementById("domain-graph-error").style.display = "none"
+                document.getElementById("domain-graph").style.display = "flex"
                 currentnodeid = -1
                 var container = $("div#domain-tree").empty()
                 sessionStorage.setItem("domaintreejson", JSON.stringify(res.resultdata))
